@@ -20,6 +20,7 @@ window.onload=function(){
 	var current =document.getElementById('current');
 	var compare = document.getElementById('compare');
 	var compareCxt = compare.getContext('2d');
+	var currentCxt = current.getContext('2d');
 	var library = document.getElementById('library');
 	var duration =document.getElementById('duration');
 	var curve = document.getElementById('curve');
@@ -33,7 +34,8 @@ window.onload=function(){
 
 	//开始滚动
 	go.onclick=function(){
-		compare.style.transition="all,10s,cubic-bezier("+srX+","+srY+","+sbX+","+sbY+"),0.1s;"
+		current.style.transition="all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;"
+		console.log("all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;");
 		
 		if(flag==0){
 			current.style.transform="translateX(600px)"
@@ -56,8 +58,7 @@ window.onload=function(){
 		var cxt1 = current.getContext('2d');
 		var cxt2 = compare.getContext('2d');
 
-		drawBezier(cxt1,50,10,50,10,10,50,10,50,'white');
-		drawBezier(cxt2,50,10,50,10,10,50,10,50,'white');
+		drawBezier(cxt2,60,0,60,0,0,60,0,60,'white');
 
 		var canvasLis = canvasWrap.getElementsByTagName('canvas');
 		for(var i=0;i<canvasLis.length;i++){
@@ -91,6 +92,9 @@ window.onload=function(){
 		curveCxt.beginPath();
 		curveCxt.fillStyle='black';	
 		drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
+		currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
+					drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
+
 
 		var oTitle1 = document.getElementById('btn1');
 		var oTitle2 = document.getElementById('btn2');
@@ -237,12 +241,6 @@ function createBackgroundCanvas () {
 				//释放鼠标
 				document.onmouseup = function(){
 					
-					curveCxt.clearRect(0,0,curveCxt.canvas.width,curveCxt.canvas.height);
-
-					drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
-					srX=redX/5,srY=redY/5,sbX=blueX/5,sbY=blueY/5,sx0=0,sy0=60,sx3=60,sy3=0;
-					compareCxt.clearRect(0,0,compareCxt.canvas.width,compareCxt.canvas.height);
-					drawBezier(compareCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
 
 					
 				
@@ -285,6 +283,14 @@ function createBackgroundCanvas () {
 			blueX = l+10;
 			blueY = t-190;
 		}
+
+
+					curveCxt.clearRect(0,0,curveCxt.canvas.width,curveCxt.canvas.height);
+
+					drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
+					srX=redX/5,srY=redY/5,sbX=blueX/5,sbY=blueY/5,sx0=0,sy0=60,sx3=60,sy3=0;
+					currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
+					drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
 		
 
 	}

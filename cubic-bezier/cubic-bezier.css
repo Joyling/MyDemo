@@ -5,8 +5,8 @@ body{
 }
 
 
-#current{
-	transition:all,10s,cubic-bezier(0.17, 0.67, 0.83, 0.67),0.1s;
+#compare{
+	transition:all,10s,cubic-bezier(0,0,1,1),0.1s;
 }
 
 input[type="range"] {
@@ -90,6 +90,7 @@ input[type="range"] {
 	right: -10px;
 	bottom: 90px;
 	background-color: #00AABB;
+	z-index: 100;
 }
 #right{
 	float: left;
@@ -132,9 +133,11 @@ input[type="range"] {
 
 canvas#current{
 	background-color: #FF0088;
+	padding: 10px;
 }
 canvas#compare{
 	background-color: #00AABB;
+	padding: 10px;
 }
 
 a{
