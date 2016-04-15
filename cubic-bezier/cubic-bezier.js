@@ -157,7 +157,7 @@ function createBackgroundCanvas () {
 		// body...
 	}
 
-	
+
 	//绘制贝塞尔曲线
 	function drawBezier (cxt,x0,y0,x1,y1,x2,y2,x3,y3,color) {
 		cxt.beginPath();
@@ -172,7 +172,6 @@ function createBackgroundCanvas () {
 		cxt.stroke();
 	}
 
-	
 
 
 
@@ -210,6 +209,7 @@ function createBackgroundCanvas () {
 
 
 
+
 	//给x按钮添加点击事件
 	canvasWrap.onclick=function(e){
 		e=e||window.event;
@@ -220,6 +220,8 @@ function createBackgroundCanvas () {
 				   target.parentNode.remove();
 				} 
 		}
+
+		
 	}
 	
 
