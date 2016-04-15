@@ -37,6 +37,7 @@ window.onload=function(){
 	var currentCxt = current.getContext('2d');
 	var library = document.getElementById('library');
 	var duration =document.getElementById('duration');
+	
 	var curve = document.getElementById('curve');
 	var curveCxt = curve.getContext('2d');
 	var redX = 0,redY=0,blueX=300,blueY=300,x0=0,y0=300,x3=300,y3=0;
@@ -57,7 +58,7 @@ window.onload=function(){
 	
 	
 	savebtn.onclick=function(){
-		changeLibraryData();
+		addlibraryData();
 		renderLibrary();
 	}
 	
@@ -65,14 +66,29 @@ window.onload=function(){
 	{
 		var arr=[];
 		var x = getValues();
-		arr.push(x);
+		
 
 		var name=prompt("if you want,you can give it a short name",x);
 		if (name!=null && name!="")
 		{
+			arr.push(x);
 		   	arr.push(name);
+		   	return arr;
+		}else{
+			return false;
 		}
-		return arr;
+		
+	}
+
+	function changeValues(){
+		var spanlis = document.getElementById('values').getElementsByTagName('span');
+		var arr=[redX/300,redY/300,blueX/300,blueY/300];
+		for(var i=0;i<4;i++){
+			if(arr[i]!=0&&arr[i]!=1){
+				arr[i]=arr[i].toFixed(2);
+			}
+			spanlis[i].innerHTML = arr[i];
+		}
 	}
 	function getValues(){
 		var returnVal="";
@@ -85,10 +101,16 @@ window.onload=function(){
 		returnVal+=spanlis[spanlis.length-1].innerHTML;
 		return returnVal;
 	}
-	function changeLibraryData(){
-		var newVal = promptFun();
+	function addlibraryData(){
+		if(promptFun()){
+			var newVal = promptFun();
 		libraryData[newVal[1]]=newVal[0];
+		}
 		
+		
+	}
+	function deletebraryData(key){
+		delete libraryData[key];
 	}
 
 	function renderLibrary(){
@@ -96,9 +118,9 @@ window.onload=function(){
 		var i=0;
 		for(key in libraryData){
 		if(i==0){
-			x+="<a href='#' class='selected'><canvas></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+			x+="<a href='#' class='selected'><canvas data-key="+key+"></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
 		}else{
-			x+="<a href='#'><canvas></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+			x+="<a href='#'><canvas data-key="+key+"></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
 		}
 		i++;		
 		}
@@ -113,8 +135,9 @@ window.onload=function(){
 			var cxt = canvasLis[i].getContext('2d');
 			
 			drawBezier(cxt,0,0,parseInt(arr[i][0]*100),parseInt(arr[i][1]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),'white');
-			canvasLis[i].style.transition="all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;"
-			console.log("all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;");
+			
+			//canvasLis[i].style.transition="all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;"
+			//console.log("all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;");
 		}
 		
 	}
@@ -136,12 +159,12 @@ window.onload=function(){
 
 	//开始滚动
 	go.onclick=function(){
-		current.style.transition="all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;"
-		console.log("all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;");
+		current.style.transition="all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s";
 		
+
 		if(flag==0){
-			current.style.transform="translateX(240px)"
-			compare.style.transform="translateX(240px)"
+			current.style.transform="translateX(240px)";
+			compare.style.transform="translateX(240px)";
 			flag=1;
 		}else if(flag==1){
 			current.style.transform="translateX(0px)"
@@ -174,6 +197,8 @@ window.onload=function(){
 		curve.width = 300;
 		curve.height = 600;
 		
+	 	
+		curveCxt.translate(0,200);
 		drawGround();
 		curveCxt.beginPath();
 		curveCxt.moveTo(0,0);
@@ -195,8 +220,8 @@ window.onload=function(){
 		curveCxt.beginPath();
 		curveCxt.fillStyle='black';	
 		drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
-		currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
-					drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
+		//currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
+		drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
 
 
 		var oTitle1 = document.getElementById('btn1');
@@ -212,7 +237,7 @@ window.onload=function(){
 		var colors = ['#fff','#F0F0F0'];
 		
 		
-		curveCxt.translate(0,200);
+		//curveCxt.translate(0,200);
 		
 
 		for(i=0;i<15;i++){
@@ -322,7 +347,10 @@ function createBackgroundCanvas () {
 
 		if(target.nodeName.toLowerCase()=="button"){
 			if (confirm("您确认要删除该条信息吗？")){
-				   target.parentNode.remove();
+
+				deletebraryData(target.parentNode.firstElementChild.dataset.key);
+			    target.parentNode.remove();
+
 				} 
 		}
 		//给library每一个方块添加点击事件
@@ -361,10 +389,6 @@ function createBackgroundCanvas () {
 				}
 				//释放鼠标
 				document.onmouseup = function(){
-					
-
-					
-				
 					document.onmousemove = null;
 					document.onmouseup = null;
 					
@@ -378,40 +402,45 @@ function createBackgroundCanvas () {
 	function fnMove(e,posX,posY){
 		var target=e.target||e.srcElement;
 		var oDrag = target;
-		l = e.clientX-posX,
-		t = e.clientY-posY;
-		//winW = document.documentElement.clientWidth||document.body.clientWidth,
-		//winH = document.documentElement.clientHeight||document.body.clientHeight,
-		//maxW = winW - oDrag.offsetWidth-5,
-		//maxH=winH -oDrag.offsetHeight;
-		if(l<-10){
-			l=-10;
-		}else if(l>290){
-			l=290;
+		if(oDrag.id=="btn1"||oDrag.id=="btn2"){
+			l = e.clientX-posX,
+			t = e.clientY-posY;
+			//winW = document.documentElement.clientWidth||document.body.clientWidth,
+			//winH = document.documentElement.clientHeight||document.body.clientHeight,
+			//maxW = winW - oDrag.offsetWidth-5,
+			//maxH=winH -oDrag.offsetHeight;
+			if(l<-10){
+				l=-10;
+			}else if(l>290){
+				l=290;
+			}
+			if(t<190){
+				t=190;
+			}else if(t>490){
+				t=490;
+			}
+			oDrag.style.left = l+'px';
+			oDrag.style.top = t+'px';
+
+			if (target.id=="btn1") {
+				redX = l+10;
+				redY = t-190;
+			}else if(target.id=="btn2"){
+				blueX = l+10;
+				blueY = t-190;
+			}
+
+			changeValues();
+			curveCxt.clearRect(0,0,curveCxt.canvas.width,curveCxt.canvas.height);
+			drawGround();
+			drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
+			srX=redX/5,srY=redY/5,sbX=blueX/5,sbY=blueY/5,sx0=0,sy0=60,sx3=60,sy3=0;
+			currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
+			drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
+
+
 		}
-		if(t<190){
-			t=190;
-		}else if(t>490){
-			t=490;
-		}
-		oDrag.style.left = l+'px';
-		oDrag.style.top = t+'px';
-
-		if (target.id=="btn1") {
-			redX = l+10;
-			redY = t-190;
-		}else if(target.id=="btn2"){
-			blueX = l+10;
-			blueY = t-190;
-		}
-
-
-					curveCxt.clearRect(0,0,curveCxt.canvas.width,curveCxt.canvas.height);
-
-					drawBezier(curveCxt,x0,y0,redX,redY,blueX,blueY,x3,y3,'black');
-					srX=redX/5,srY=redY/5,sbX=blueX/5,sbY=blueY/5,sx0=0,sy0=60,sx3=60,sy3=0;
-					currentCxt.clearRect(0,0,currentCxt.canvas.width,currentCxt.canvas.height);
-					drawBezier(currentCxt,sx0,sy0,srX,srY,sbX,sbY,sx3,sy3,'white');
+		
 		
 
 	}
