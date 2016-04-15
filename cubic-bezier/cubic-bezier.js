@@ -37,7 +37,13 @@ window.onload=function(){
 	var currentCxt = current.getContext('2d');
 	var library = document.getElementById('library');
 	var duration =document.getElementById('duration');
-	
+	var time = duration.value;
+	var im = document.getElementById('import');
+	var ex = document.getElementById('export');
+	var importexport = document.getElementById('importexport');
+	var imbtn = document.getElementById('imbtn');
+	var closebtn =document.getElementById('closebtn');
+	var json =document.getElementById('json');
 	var curve = document.getElementById('curve');
 	var curveCxt = curve.getContext('2d');
 	var redX = 0,redY=0,blueX=300,blueY=300,x0=0,y0=300,x3=300,y3=0;
@@ -54,13 +60,81 @@ window.onload=function(){
 		"ease-out":"0,0,.58,1",
 		"ease-in-out":".42,0,.58,1"	
 	};
+	document.getElementById('result').innerHTML=time+"seconds";
 
-	
+
+	closebtn.onclick=function(){
+
+		importexport.style.display="none";
+		imbtn.style.display="inline-block";
+
+
+
+		
+	}
+	ex.onclick=function(e){
+
+		importexport.style.display="block";
+		imbtn.style.display="none";
+
+		var x="";
+		
+		for(key in libraryData){
+			x += "div\r{-webkit-transition:all 600ms cubic-bezier(";
+				
+				
+			x+=libraryData[key];
+				
+			
+			x+=");transition:all 600ms cubic-bezier(";
+			
+			x+=libraryData[key];
+			
+			x+=")\r";
+		}
+		
+		json.innerHTML = x;
+
+	}
+	im.onclick=function(){
+		importexport.style.display="block";
+		imbtn.style.display="inline-block";
+
+
+	}
+	imbtn.onclick=function(){
+		var overwrite = confirm('Add to current curves? Clicking “Cancel” will overwrite them with the new ones.');
+		
+		try {
+			var newCurves = JSON.parse(json.value);
+
+		} 
+		catch(e) { 
+			alert('Sorry mate, this doesn’t look like valid JSON so I can’t do much with it :('); 
+			return false;
+		}
+		
+		if(overwrite) {
+			for(key in newCurves){
+				libraryData[key]=newCurves[key];
+			}
+			renderLibrary();
+
+		}
+	}
+
 	
 	savebtn.onclick=function(){
 		addlibraryData();
 		renderLibrary();
 	}
+
+	duration.onmousemove=function  () {
+		time=duration.value;
+		document.getElementById('result').innerHTML=time+"seconds";
+	}
+
+	
 	
 	function promptFun()
 	{
@@ -111,6 +185,7 @@ window.onload=function(){
 	}
 	function deletebraryData(key){
 		delete libraryData[key];
+		renderLibrary();
 	}
 
 	function renderLibrary(){
@@ -126,12 +201,18 @@ window.onload=function(){
 		}
 		canvasWrap.innerHTML=x;	
 		drawLibrary();	
+		getNowKey();
+		
+
 	}
 	function drawLibrary(){
 		var arr = libraryToArr();
 		console.log(arr);
 		var canvasLis = canvasWrap.getElementsByTagName('canvas');
 		for(var i=0;i<canvasLis.length;i++){
+			canvasLis[i].style.transition="all,"+2+"s,cubic-bezier("+libraryData[canvasLis[i].dataset.key]+")";
+			console.log("all,"+2+"s,cubic-bezier("+libraryData[canvasLis[i].dataset.key]+")");
+			
 			var cxt = canvasLis[i].getContext('2d');
 			
 			drawBezier(cxt,0,0,parseInt(arr[i][0]*100),parseInt(arr[i][1]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),'white');
@@ -159,8 +240,8 @@ window.onload=function(){
 
 	//开始滚动
 	go.onclick=function(){
-		current.style.transition="all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s";
-		
+		current.style.transition="all,"+time+"s,cubic-bezier("+(srX/60).toFixed(2)+","+(srY/60).toFixed(2)+","+(sbX/60).toFixed(2)+","+parseInt(sbY/60).toFixed(2)+")";
+		compare.style.transition="all,"+time+"s,cubic-bezier("+libraryData[getNowKey()]+")";
 
 		if(flag==0){
 			current.style.transform="translateX(240px)";
@@ -320,23 +401,36 @@ function createBackgroundCanvas () {
 		}
 
 	}
+
+
 	canvasWrap.onmouseout=function(e){
 		
 		e=e||window.event;
 		var target = e.target||e.srcElement;
 		
 
-		if(target.nodeName.toLowerCase()  == "canvas"){
+		if(target.nodeName.toLowerCase()  == "a"){
 			//var i = parseInt(target.dataset.count);
 			
 			//btnList[i].style.display="none";
 
-			target.parentNode.lastElementChild.style.display='none';
+			target.lastElementChild.style.display='none';
 
 		}
 
 	}
 
+
+	function getNowKey(){
+		var alis = canvasWrap.getElementsByTagName('a');
+		for(var i=0;i<alis.length;i++){
+			if(hasClass(alis[i],'selected')){
+				return(alis[i].firstElementChild.dataset.key);
+				// return alis[i].firstElementChild.dataset.key;
+			}
+			
+		}
+	}
 
 
 
@@ -352,6 +446,9 @@ function createBackgroundCanvas () {
 			    target.parentNode.remove();
 
 				} 
+				else{
+					target.style.display="none";
+				}
 		}
 		//给library每一个方块添加点击事件
 	
@@ -363,6 +460,8 @@ function createBackgroundCanvas () {
 				removeClass(alis[i],'selected');
 			}
 			addClass(target.parentNode,'selected');
+			getNowKey();
+
 			
 		 	
 		 }

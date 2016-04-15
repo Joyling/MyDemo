@@ -41,10 +41,10 @@
 				
 				<p>
 					<label for="duration">Duration</label>
-					<input type="range" id="duration" value="1" min="0.1" max="10" step="0.1" pattern="\d*\.?\d+" size="3">
+					<input type="range" id="duration" min="0.1" max="10" step="0.1" pattern="\d*\.?\d+" size="3">
 				</p>
 				
-				<output for="duration">0.1 seconds</output>
+				<output id="result" for="duration">0.1 seconds</output>
 
 				<div class="canvas-wrap">
 					<canvas id="current"></canvas>
@@ -56,8 +56,8 @@
 
 			<section id="library">
 				
-				<h1>Library<button class="btn">IMPORT</button>
-				<button class="btn">EXPORT</button></h1>
+				<h1>Library<button id="import" class="btn">IMPORT</button>
+				<button id="export" class="btn">EXPORT</button></h1>
 				
 				<p>Click on a curve to compare it with the current one.</p>
 
@@ -78,6 +78,14 @@
 		
 
 	</div>
+
+	<div  id="importexport">
+		<textarea id="json"></textarea>
+		<button id="imbtn">import</button>
+		<button id="closebtn">close</button>
+	</div>
+
+
 		
 
 
