@@ -11,12 +11,26 @@ function getByClass(clsName,parent){
 	return eles;
 }
 
+function hasClass(element,cName){        //检查class是否存在
+    return !!element.className.match(new RegExp('(\\s|^)'+cName+'(\\s|$)'));
+}
+
+function addClass(element,cName){        //添加一个class
+    if(!hasClass(element,cName)){
+        element.className +=' '+cName;
+    }
+}
+function removeClass(element,cName){        //移除一个class
+    if(hasClass(element,cName)){
+        element.className = element.className.replace(new RegExp('(\\s|^)'+cName+'(\\s|$)'),' ');
+    }
+}
+
 
 
 window.onload=function(){
 
-
-	var go = document.getElementById('go');
+	var go = document.getElementById('go'),savebtn = document.getElementById('save');
 	var current =document.getElementById('current');
 	var compare = document.getElementById('compare');
 	var compareCxt = compare.getContext('2d');
@@ -32,14 +46,102 @@ window.onload=function(){
 	var btnList = getByClass('del');
 	var flag=0;
 
+	var libraryData = {
+		"ease":".25,.1,.25,1",
+		"linear":"0,0,1,1",
+		"ease-in":".42,0,1,1",
+		"ease-out":"0,0,.58,1",
+		"ease-in-out":".42,0,.58,1"	
+	};
+
+	
+	
+	savebtn.onclick=function(){
+		changeLibraryData();
+		renderLibrary();
+	}
+	
+	function promptFun()
+	{
+		var arr=[];
+		var x = getValues();
+		arr.push(x);
+
+		var name=prompt("if you want,you can give it a short name",x);
+		if (name!=null && name!="")
+		{
+		   	arr.push(name);
+		}
+		return arr;
+	}
+	function getValues(){
+		var returnVal="";
+		var str="";
+		var spanlis = document.getElementById('values').getElementsByTagName('span');
+		for(var i=0;i<spanlis.length-1;i++){
+			str = spanlis[i].innerHTML+",";
+			returnVal+=str;
+		}
+		returnVal+=spanlis[spanlis.length-1].innerHTML;
+		return returnVal;
+	}
+	function changeLibraryData(){
+		var newVal = promptFun();
+		libraryData[newVal[1]]=newVal[0];
+		
+	}
+
+	function renderLibrary(){
+		var x = "";
+		var i=0;
+		for(key in libraryData){
+		if(i==0){
+			x+="<a href='#' class='selected'><canvas></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+		}else{
+			x+="<a href='#'><canvas></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+		}
+		i++;		
+		}
+		canvasWrap.innerHTML=x;	
+		drawLibrary();	
+	}
+	function drawLibrary(){
+		var arr = libraryToArr();
+		console.log(arr);
+		var canvasLis = canvasWrap.getElementsByTagName('canvas');
+		for(var i=0;i<canvasLis.length;i++){
+			var cxt = canvasLis[i].getContext('2d');
+			
+			drawBezier(cxt,0,0,parseInt(arr[i][0]*100),parseInt(arr[i][1]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),parseInt(arr[i][2]*100),parseInt(arr[i][3]*100),'white');
+			canvasLis[i].style.transition="all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;"
+			console.log("all,10s,cubic-bezier("+arr[i][0]+","+arr[i][1]+","+arr[i][2]+","+arr[i][3]+"),10s;");
+		}
+		
+	}
+
+	function libraryToArr(){
+		var arr = [];
+		var i=0;
+		for(key in libraryData){
+			
+			arr[i]=libraryData[key].split(",");
+			i++;
+			//canvasLis[item].drawBezier(cxt,0,0,1,1);
+			//drawBezier(cxt2,60,0,60,0,0,60,0,60,'white');
+		}
+		return arr;
+	}
+
+
+
 	//开始滚动
 	go.onclick=function(){
 		current.style.transition="all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;"
 		console.log("all,10s,cubic-bezier("+parseInt(srX/60)+","+parseInt(srY/60)+","+parseInt(sbX/60)+","+parseInt(sbY/60)+"),0.1s;");
 		
 		if(flag==0){
-			current.style.transform="translateX(600px)"
-			compare.style.transform="translateX(600px)"
+			current.style.transform="translateX(240px)"
+			compare.style.transform="translateX(240px)"
 			flag=1;
 		}else if(flag==1){
 			current.style.transform="translateX(0px)"
@@ -48,6 +150,7 @@ window.onload=function(){
 		}
 		
 	}
+
 
 	//绘制curve的底色
 	function initCurve(){
@@ -60,12 +163,12 @@ window.onload=function(){
 
 		drawBezier(cxt2,60,0,60,0,0,60,0,60,'white');
 
-		var canvasLis = canvasWrap.getElementsByTagName('canvas');
-		for(var i=0;i<canvasLis.length;i++){
-			canvasLis[i].width=100;
-			canvasLis[i].height=100;
+		//var canvasLis = canvasWrap.getElementsByTagName('canvas');
+		//for(var i=0;i<canvasLis.length;i++){
+		//	canvasLis[i].width=100;
+		//	canvasLis[i].height=100;
 
-		}
+		//}
 
 		
 		curve.width = 300;
@@ -170,6 +273,7 @@ function createBackgroundCanvas () {
 
 		cxt.strokeStyle=color;
 		cxt.stroke();
+
 	}
 
 
@@ -180,7 +284,7 @@ function createBackgroundCanvas () {
 		
 		e=e||window.event;
 		var target = e.target||e.srcElement;
-		var btnList = getByClass('del');
+		// var btnList = getByClass('del');
 
 		if(target.nodeName.toLowerCase()  == "canvas"){
 			//var i = parseInt(target.dataset.count);
@@ -201,6 +305,7 @@ function createBackgroundCanvas () {
 			//var i = parseInt(target.dataset.count);
 			
 			//btnList[i].style.display="none";
+
 			target.parentNode.lastElementChild.style.display='none';
 
 		}
@@ -220,6 +325,20 @@ function createBackgroundCanvas () {
 				   target.parentNode.remove();
 				} 
 		}
+		//给library每一个方块添加点击事件
+	
+	
+		
+		if(target.nodeName.toLowerCase()=="canvas"){
+			var alis = canvasWrap.getElementsByTagName('a');
+			for(var i=0;i<alis.length;i++){
+				removeClass(alis[i],'selected');
+			}
+			addClass(target.parentNode,'selected');
+			
+		 	
+		 }
+	
 
 		
 	}
@@ -300,6 +419,7 @@ function createBackgroundCanvas () {
 
 	function init(){
 		initCurve();
+		renderLibrary();
 	}
 	init();
 	

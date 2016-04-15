@@ -30,7 +30,12 @@
 		<div id="inner">
 			
 			<section id="preview">
-			<h1>cubic-bezier(1,0,0,1)<button class="btn">SAVE</button></h1>
+			<h1>cubic-bezier(
+			<span id="values">
+				<span id="P1x" class="param">.17</span>,<span id="P1y" class="param">.67</span>,<span id="P2x" class="param">.83</span>,<span id="P2y" class="param">.67</span>
+			</span>
+			)
+			<button id="save" class="btn">SAVE</button></h1>
 				 
 				<h1>Preview&compare<button id="go" class="btn">GO!</button></h1>
 				
@@ -58,31 +63,8 @@
 
 				<div class="canvas-wrap">
 
-					<a href="#">
-						<canvas id="ease"></canvas>
-						<span>ease</span>	
-						<button class="del" title="Remove from library">×</button>
-					</a>
-					<a href="#" class="selected">
-						<canvas id="linear"></canvas>
-						<span>linear</span>
-						<button class="del" title="Remove from library">×</button>	
-					</a>
-					<a href="#">
-						<canvas id="ease-in"></canvas>
-						<span>ease-in</span>
-						<button class="del" title="Remove from library">×</button>	
-					</a>
-					<a href="#">
-						<canvas id="ease-out"></canvas>
-						<span>ease-out</span>
-						<button class="del" title="Remove from library">×</button>	
-					</a>
-					<a href="#">
-						<canvas id="ease-in-out"></canvas>
-						<span>ease-in-out</span>	
-						<button class="del" title="Remove from library">×</button>
-					</a>
+					
+					
 					
 				</div>
 
