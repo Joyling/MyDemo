@@ -248,8 +248,8 @@ window.onload=function(){
 			compare.style.transform="translateX(240px)";
 			flag=1;
 		}else if(flag==1){
-			current.style.transform="translateX(0px)"
-			compare.style.transform="translateX(0px)"
+			current.style.transform="translateX(0px)";
+			compare.style.transform="translateX(0px)";
 			flag=0;
 		}
 		
