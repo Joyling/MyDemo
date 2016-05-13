@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>cubic-bezier</title>
+	<meta charset="utf-8">
+</head>
+
+<link rel="stylesheet" type="text/css" href="cubic-bezier.css">
+<body>
+
+	
+
+	<div id="control-panel">
+
+		<div id="btn-group">
+			<span class="btnC" id="btn0"></span>
+			<button class="btnC" id="btn1"></button>
+			<button class="btnC" id="btn2"></button>
+			<span class="btnC" id="btn3"></span>
+		</div>
+
+		<canvas id="curve" >
+			当前浏览器不支持Canvas
+		</canvas>
+
+	</div>
+
+	<div id="right">
+
+		<div id="inner">
+			
+			<section id="preview">
+			<h1>cubic-bezier(
+			<span id="values">
+				<span id="P1x" class="param">.17</span>,<span id="P1y" class="param">.67</span>,<span id="P2x" class="param">.83</span>,<span id="P2y" class="param">.67</span>
+			</span>
+			)
+			<button id="save" class="btn">SAVE</button></h1>
+				 
+				<h1>Preview&compare<button id="go" class="btn">GO!</button></h1>
+				
+				<p>
+					<label for="duration">Duration</label>
+					<input type="range" id="duration" min="0.1" max="10" step="0.1" pattern="\d*\.?\d+" size="3">
+				</p>
+				
+				<output id="result" for="duration">0.1 seconds</output>
+
+				<div class="canvas-wrap">
+					<canvas id="current"></canvas>
+					<canvas id="compare"></canvas>
+				</div>
+				
+
+			</section>
+
+			<section id="library">
+				
+				<h1>Library<button id="import" class="btn">IMPORT</button>
+				<button id="export" class="btn">EXPORT</button></h1>
+				
+				<p>Click on a curve to compare it with the current one.</p>
+
+				<div class="canvas-wrap">
+
+					
+					
+					
+				</div>
+
+				
+
+				<p><strong>Tip:</strong>:Right click on any library curve and select “Copy Link Address” to get a permalink to it which you can share with others </p>
+
+			</section>
+
+		</div>
+		
+
+	</div>
+
+	<div  id="importexport">
+		<textarea id="json"></textarea>
+		<button id="imbtn">import</button>
+		<button id="closebtn">close</button>
+	</div>
+
+
+		
+
+
+
+<script type="text/javascript" src="cubic-bezier.js"></script>
+</body>
+</html>
