@@ -10,22 +10,26 @@
 
 	
 
-	<div id="control-panel">
+	<div id="control_wrap">
 
-		<div id="btn-group">
+		<div id="btn_group">
 			<span class="btnC" id="btn0"></span>
 			<button class="btnC" id="btn1"></button>
 			<button class="btnC" id="btn2"></button>
 			<span class="btnC" id="btn3"></span>
 		</div>
 
-		<canvas id="curve" >
+		<canvas id="bg" >
 			当前浏览器不支持Canvas
+		</canvas>
+
+		<canvas id="operate" >
+			
 		</canvas>
 
 	</div>
 
-	<div id="right">
+	<div id="feature_wrap">
 
 		<div id="inner">
 			
@@ -46,7 +50,7 @@
 				
 				<output id="result" for="duration">0.1 seconds</output>
 
-				<div class="canvas-wrap">
+				<div class="exhibit">
 					<canvas id="current"></canvas>
 					<canvas id="compare"></canvas>
 				</div>

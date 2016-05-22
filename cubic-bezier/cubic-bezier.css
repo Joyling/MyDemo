@@ -37,30 +37,37 @@ input[type="range"] {
   }
 
 
-#control-panel{
+#control_wrap{
 	margin-left: 20px;
 	width: 300px;
-	height: 600px;
+	height: 300px;
 	background-color: #FAFAFA;
-	position: relative;
+	position: absolute;
 	float: left;
-	top: 10px;
+	top: 50%;
+	margin-top: -150px;
 }
-#control-panel:before{
+#control_wrap:before{
 	content: "PROGRESSION";
 	position: absolute;
-	bottom: 110px;
+	bottom: 20px;
 	left: 0px;
 	transform:rotate(-90deg);
 	transform-origin:bottom left;
 }
-#control-panel:after{
+#control_wrap:after{
 	content: "TIME";
 	position: absolute;
-	bottom: 80px;
+	bottom: 0px;
 	left: 10px;
 }
 
+
+#operate{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
 
 .btnC{
 	width: 20px;
@@ -72,23 +79,23 @@ input[type="range"] {
 
 #btn0{
 	left: -10px;
-	bottom: 90px;
+	bottom: -10px;
 	background-color: #fff;
 }
 #btn3{
 	right: -10px;
-	bottom: 390px;
+	top: -10px;
 	background-color: #fff;
 }
 #btn1{
 	left: -10px;
-	bottom: 390px;
+	top: -10px;
 	background-color: #FF0088;
 	z-index: 99;
 }
 #btn2{
 	right: -10px;
-	bottom: 90px;
+	bottom: -10px;
 	background-color: #00AABB;
 	z-index: 100;
 }
