@@ -1,10 +1,69 @@
-// 背景类
+function getByClass(clsName,parent){
+	var oParent = parent?document.getElementById(parent):document,
+	eles=[],
+	elements=oParent.getElementsByTagName('*');
+
+	for(var i=0,l=elements.length;i<l;i++){
+		if (elements[i].className == clsName) {
+			eles.push(elements[i]);
+		}
+	}
+	return eles;
+}
+
+function hasClass(element,cName){        //检查class是否存在
+    return !!element.className.match(new RegExp('(\\s|^)'+cName+'(\\s|$)'));
+}
+
+function addClass(element,cName){        //添加一个class
+    if(!hasClass(element,cName)){
+        element.className +=' '+cName;
+    }
+}
+function removeClass(element,cName){        //移除一个class
+    if(hasClass(element,cName)){
+        element.className = element.className.replace(new RegExp('(\\s|^)'+cName+'(\\s|$)'),' ');
+    }
+}
+
+
+function Bessel(){
+	this.init = function(canvas,width,height,x0,y0,x1,y1,c1,c2,lw1,lw2){
+		this.context = canvas.getContext("2d");
+		canvas.width=width;
+		canvas.height=height;
+		this.position ={w:width,h:height,beginx:0,beginy:height,x0:x0,y0:y0,x1:x1,y1:y1,endx:width,endy:0,color1:c1,color2:c2,lineWidth1:lw1,lineWidth2:lw2};
+		
+	}
+	this.draw = function(){
+		this.context.clearRect(0,0,this.position.w,this.position.h);
+
+		this.context.beginPath();
+		this.context.lineWidth=this.position.lineWidth2;
+		this.context.moveTo(this.position.beginx,this.position.beginy);
+		this.context.lineTo(this.position.x0,this.position.y0);
+		this.context.strokeStyle=this.position.color2;
+		this.context.stroke();
+		this.context.closePath();
+
+		this.context.lineWidth = this.position.lineWidth1;
+		this.context.bezierCurveTo(this.position.x0,this.position.y0,this.position.x1,this.position.y1,this.position.endx,this.position.endy);
+		this.context.strokeStyle=this.position.color1;
+		this.context.stroke();
+		
+		this.context.moveTo(this.position.endx,this.position.endy);
+		this.context.lineTo(this.position.x1,this.position.y1);
+		this.context.strokeStyle=this.position.color2;
+		this.context.stroke();
+	}
+}
+
+// 背景绘制
 function Background(){
 	this.draw = function(){
 		var flag=0;
 		var colors = ['#F0F0F0','#fff'];
-		
-		
+
 		for(i=0;i<15;i++){
 			
 			this.context.beginPath();
@@ -21,10 +80,192 @@ function Background(){
 			this.context.closePath();
 
 		}
+		this.context.beginPath();
+		this.context.lineWidth=10;
+		this.context.moveTo(0,300);
+		this.context.lineTo(300,0);
+		this.context.strokeStyle="#D9D9D9";
+		this.context.stroke();
 		
 	}
 }
-// END背景类
+Background.prototype = new Bessel();
+// END背景绘制
+
+//贝塞尔曲线绘制
+function Operate(){
+	
+}
+Operate.prototype = new Bessel();
+//END贝塞尔曲线绘制
+
+function Current(){
+	this.parms = {x0:0,y0:0,x1:1,y1:0};
+}
+Current.prototype = new Bessel();
+
+function Compare () {
+	this.parms = {x0:.25,y0:.1,x1:.25,y1:1};
+}
+Compare.prototype = new Bessel();
+
+function Library(){
+
+	var libraryData = {
+		"ease":".25,.1,.25,1",
+		"linear":"0,0,1,1",
+		"ease-in":".42,0,1,1",
+		"ease-out":"0,0,.58,1",
+		"ease-in-out":".42,0,.58,1"	
+	}
+
+	this.init = function(){
+		
+		render();
+	}
+
+
+	function render(){
+
+		var x="";
+		var i=0;
+
+		for(key in libraryData){
+
+			if(i==0){
+				x+="<a href='#' class='selected'><canvas data-key="+key+"></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+			}else{
+				x+="<a href='#'><canvas data-key="+key+"></canvas><span>"+key+"</span><button class='del' title='Remove from library'>×</button>";
+			}
+				i++;		
+		}
+
+
+		document.getElementById("canvas-wrap").innerHTML = x;
+
+
+		var canvas = document.getElementById("canvas-wrap").getElementsByTagName("canvas");
+
+		
+		var arr = [],i=0;
+
+		for(key in libraryData){
+			arr[i]=new Bessel();
+			var libraryArr = libraryData[key].split(",");
+
+			
+			arr[i].init(canvas[i],60,60,60*libraryArr[0],60*libraryArr[1],60*libraryArr[2],60*libraryArr[3],"#fff","#fff",1,1)
+			
+			arr[i++].draw();
+		}
+
+
+		document.getElementById("canvas-wrap").onmouseover=function(e){
+			
+			e=e||window.event;
+			var target = e.target||e.srcElement;
+
+			if(target.nodeName.toLowerCase()  == "canvas"){
+				
+				target.parentNode.lastElementChild.style.display='block';
+
+			}
+
+		}
+
+
+		document.getElementById("canvas-wrap").onmouseout=function(e){
+			
+			e=e||window.event;
+			var target = e.target||e.srcElement;
+			
+
+			if(target.nodeName.toLowerCase()  == "a"){
+
+				target.lastElementChild.style.display='none';
+
+			}
+
+		}
+	}
+
+
+	//给x按钮添加点击事件
+	document.getElementById("canvas-wrap").addEventListener("click",del);
+
+	function del(e){
+		e=e||window.event;
+		var target = e.target||e.srcElement;
+
+		if(target.nodeName.toLowerCase()=="button"){
+			if (confirm("您确认要删除该条信息吗？")){
+				var key = target.parentNode.firstElementChild.dataset.key;
+				
+				delete libraryData[key];
+				
+			    render();
+			
+
+
+				} 
+				else{
+					target.style.display="none";
+				}
+		}
+
+		//给library每一个方块添加点击事件
+		
+			
+			if(target.nodeName.toLowerCase()=="canvas"){
+				var alis = document.getElementById("canvas-wrap").getElementsByTagName('a');
+				for(var i=0;i<alis.length;i++){
+					removeClass(alis[i],'selected');
+				}
+				addClass(target.parentNode,'selected'); 
+				var key = getNowKey(),libraryArr = libraryData[key].split(",");
+				main.compare.init(main.compareCanvas,60,60,60*libraryArr[0],60*libraryArr[1],60*libraryArr[2],60*libraryArr[3],"#fff","#fff");
+				main.compare.parms=libraryArr;
+				
+				main.compare.draw();	
+			 }
+		
+		
+
+		 function getNowKey(){
+		 	var alis = document.getElementById("canvas-wrap").getElementsByTagName('a');
+		 	for(var i=0;i<alis.length;i++){
+		 		if(hasClass(alis[i],'selected')){
+		 			return(alis[i].firstElementChild.dataset.key);
+		 		}
+		 		
+		 	}
+		 }
+		
+	}
+}
+
+function animate(flag,obj1,obj2,time,parm1,parm2){
+	obj1.style.transition="all,"+time+"s,cubic-bezier("+parm1+")";
+	obj1.style.transition="all,"+time+"s,cubic-bezier("+parm2+")";
+
+	if(flag){
+		obj1.style.transform="translateX(240px)";
+		obj2.style.transform="translateX(240px)";
+		
+	}else if(!flag){
+		obj1.style.transform="translateX(0px)";
+		obj2.style.transform="translateX(0px)";
+		
+	}
+}
+
+function objtoArr(obj){
+	var arr=[];
+	for(key in obj){
+		arr.push(obj[key]);
+	}
+	return arr;
+}
 
 
 // 主函数入口
@@ -32,28 +273,54 @@ function Main(){
 	this.init = function(){
 
 		this.bgCanvas = document.getElementById("bg");
+		this.operateCanvas = document.getElementById("operate");
+		this.compareCanvas = document.getElementById("compare");
+		this.currentCanvas = document.getElementById("current");
+		this.go = document.getElementById("go");
+		this.t= document.getElementById("duration").value;
 
-		this.bgCanvas.width=300;
-		this.bgCanvas.height=300;
+
 
 		if (this.bgCanvas.getContext) {
-			this.bgContext = this.bgCanvas.getContext("2d");
-			Background.prototype.context = this.bgContext;
-
 			return true;
 		}else{
 			return false;
 		}
 	}
+
 	this.star = function(){
-		var ba = new Background();
-		ba.draw();
+		this.bg = new Background();
+		this.bg.init(this.bgCanvas,300,300);
+		this.bg.draw();
+		
+		this.operate = new Operate();
+		this.operate.init(this.operateCanvas,300,300,0,0,300,300,"#000000","#797979",4,2);
+		this.operate.draw();
+
+		this.cur = new Current();
+		this.cur.init(this.currentCanvas,60,60,0,0,60,60,"#fff","#fff",2,1);
+		this.cur.draw();
+
+
+		this.compare = new Compare();
+		this.compare.init(this.compareCanvas,60,60,0,0,60,60,"#fff","#fff",2,1);
+		this.compare.draw();
+
+		this.library = new Library();
+		this.library.init();
+		var flag = false;
+		this.go.onclick= function(){
+			flag=!flag;
+			animate(flag,main.currentCanvas,main.compareCanvas,this.t,objtoArr(main.cur.parms).join(","),objtoArr(main.compare.parms).join(","));
+			
+			
+		}
+		
+	
 	}
 
 }
 // END主函数入口
-
-
 
 var main = new Main();
 if(main.init()){
@@ -61,3 +328,76 @@ if(main.init()){
 }
 
 
+
+document.onmousedown = function(e) {
+   event = event || window.event;
+	var target = event.target||event.srcElement;
+	if(target.id=="btn1"||target.id=="btn2"){
+		funDown(event);
+	}
+}
+
+function funDown(event){
+		
+	event = event || window.event;
+	var target = event.target||event.srcElement;
+	if(target.id=="btn1"||target.id=="btn2"){
+		var oDrag = document.getElementById(target.id),
+		//光标按下时，光标和面板之间的距离
+		disX = event.clientX - oDrag.offsetLeft,
+		disY = event.clientY - oDrag.offsetTop;
+		document.onmousemove = function(event){
+			event = event||window.event;
+			fnMove(event,disX,disY);
+		}
+		//释放鼠标
+		document.onmouseup = function(){
+
+			document.onmousemove = null;
+			document.onmouseup = null;
+	
+		}
+	}
+			
+}
+function fnMove(e,posX,posY){
+	var target=e.target||e.srcElement;
+	var oDrag = target;
+	if(oDrag.id=="btn1"||oDrag.id=="btn2"){
+		l = e.clientX-posX,
+		t = e.clientY-posY;
+
+		oDrag.style.left = l+'px';
+		oDrag.style.top = t+'px';
+
+		if(oDrag.id=="btn1"){
+			main.operate.position.x0=l+10;
+			main.operate.position.y0=t+10;
+
+			main.cur.position.x0=(main.operate.position.x0)/5;
+			main.cur.position.y0=(main.operate.position.y0)/5;
+
+			main.cur.parms.x0 = main.cur.position.x0/12;
+			main.cur.parms.y0 = main.cur.position.y0/12;
+
+
+
+
+			main.operate.draw();
+			main.cur.draw();
+		}else if(oDrag.id=="btn2"){
+			main.operate.position.x1=l+10;
+			main.operate.position.y1=t+10;
+
+			main.cur.position.x1=(main.operate.position.x1)/5;
+			main.cur.position.y1=(main.operate.position.y1)/5;
+
+			main.cur.parms.x1 = main.cur.position.x1/12;
+			main.cur.parms.y1 = main.cur.position.y1/12;
+
+			main.operate.draw();
+			main.cur.draw();
+		}
+	}
+	
+}
