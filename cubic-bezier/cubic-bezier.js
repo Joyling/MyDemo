@@ -32,12 +32,15 @@ function Bessel(){
 		this.context = canvas.getContext("2d");
 		canvas.width=width;
 		canvas.height=height;
-		this.position ={w:width,h:height,beginx:0,beginy:height,x0:x0,y0:y0,x1:x1,y1:y1,endx:width,endy:0,color1:c1,color2:c2,lineWidth1:lw1,lineWidth2:lw2};
+		this.position ={w:width,h:height,beginx:0,beginy:0,x0:x0,y0:y0,x1:x1,y1:y1,endx:width,endy:height,color1:c1,color2:c2,lineWidth1:lw1,lineWidth2:lw2};
+		
+		
 		
 	}
 	this.draw = function(){
+		
 		this.context.clearRect(0,0,this.position.w,this.position.h);
-
+		
 		this.context.beginPath();
 		this.context.lineWidth=this.position.lineWidth2;
 		this.context.moveTo(this.position.beginx,this.position.beginy);
@@ -100,7 +103,7 @@ Operate.prototype = new Bessel();
 //END贝塞尔曲线绘制
 
 function Current(){
-	this.parms = {x0:0,y0:0,x1:1,y1:0};
+	this.parms = {x0:0,y0:0,x1:1,y1:1};
 }
 Current.prototype = new Bessel();
 
@@ -152,9 +155,8 @@ function Library(){
 		for(key in libraryData){
 			arr[i]=new Bessel();
 			var libraryArr = libraryData[key].split(",");
-
-			
-			arr[i].init(canvas[i],60,60,60*libraryArr[0],60*libraryArr[1],60*libraryArr[2],60*libraryArr[3],"#fff","#fff",1,1)
+	
+			arr[i].init(canvas[i],100,100,100*libraryArr[0],100*libraryArr[1],100*libraryArr[2],100*libraryArr[3],"#fff","#fff",1,1)
 			
 			arr[i++].draw();
 		}
@@ -190,7 +192,7 @@ function Library(){
 	}
 
 
-	//给x按钮添加点击事件
+	//删除方块按钮添加点击事件
 	document.getElementById("canvas-wrap").addEventListener("click",del);
 
 	function del(e){
@@ -242,21 +244,110 @@ function Library(){
 		 }
 		
 	}
+
+
+	//SAVE按钮
+	document.getElementById("save").onclick=function(){
+		addlibraryData();
+		render();
+	}
+
+	function promptFun(){
+		var arr=[];
+		var x = getValues();
+		var name=prompt("if you want,you can give it a short name",x);
+		if (name!=null && name!="")
+		{
+			arr.push(x);
+		   	arr.push(name);
+		   	return arr;
+		}else{
+			return false;
+		}
+		
+	}
+	function getValues(){
+		var returnVal="";
+		var str="";
+		var spanlis = document.getElementById('values').getElementsByTagName('span');
+		for(var i=0;i<spanlis.length-1;i++){
+			str = spanlis[i].innerHTML+",";
+			returnVal+=str;
+		}
+		returnVal+=spanlis[spanlis.length-1].innerHTML;
+		return returnVal;
+	}
+
+	function addlibraryData(){
+		var temp = promptFun();
+		if(temp){
+			var newVal = temp;
+		libraryData[newVal[1]]=newVal[0];
+		}
+		
+	}
+	//EXPORT功能
+	document.getElementById("export").onclick = function(e){
+		e.stopPropagation();
+		document.getElementById("exPanel").style.display="block";
+		document.getElementById("exJson").innerHTML = JSON.stringify(libraryData);;
+	}
+	//CLOSE按钮
+	document.getElementById("ExCbtn").onclick = function(){
+		document.getElementById("exPanel").style.display="none";
+		
+	}
+	//IMIPORT功能
+	document.getElementById("import").onclick = function(e){
+		e.stopPropagation();
+		document.getElementById("imPanel").style.display="block";
+		document.getElementById("imJson").innerHTML = "";
+	}
+	//CLOSE按钮
+	document.getElementById("ImCbtn").onclick = function(){
+		document.getElementById("imPanel").style.display="none";
+		
+	}
+	document.getElementById("imbtn").onclick=function(){
+		var overwrite = confirm('Add to current curves? Clicking “Cancel” will overwrite them with the new ones.');
+		
+		try {
+			var newCurves = JSON.parse(document.getElementById("imJson").value);
+			
+
+		} 
+		catch(e) { 
+
+			alert('Sorry mate, this doesn’t look like valid JSON so I can’t do much with it :('); 
+
+			return false;
+		}
+		
+		if(overwrite) {
+			for(key in newCurves){
+				libraryData[key]=newCurves[key];
+			}
+			render();
+
+		}
+	}
+
+
 }
 
 function animate(flag,obj1,obj2,time,parm1,parm2){
-	obj1.style.transition="all,"+time+"s,cubic-bezier("+parm1+")";
-	obj1.style.transition="all,"+time+"s,cubic-bezier("+parm2+")";
-
 	if(flag){
-		obj1.style.transform="translateX(240px)";
-		obj2.style.transform="translateX(240px)";
+		obj1.style.transform="translateX(400px)";
+		obj2.style.transform="translateX(400px)";
 		
 	}else if(!flag){
 		obj1.style.transform="translateX(0px)";
 		obj2.style.transform="translateX(0px)";
 		
 	}
+
+	obj1.style.transition="all,cubic-bezier("+parm1+")"+time+"s";
+	obj2.style.transition="all,cubic-bezier("+parm2+")"+time+"s";
 }
 
 function objtoArr(obj){
@@ -265,6 +356,13 @@ function objtoArr(obj){
 		arr.push(obj[key]);
 	}
 	return arr;
+}
+
+function  setCubic (p) {
+	document.getElementById("P0x").innerHTML=p[0].toFixed(2);
+	document.getElementById("P0y").innerHTML=p[1].toFixed(2);
+	document.getElementById("P1x").innerHTML=p[2].toFixed(2);
+	document.getElementById("P1y").innerHTML=p[3].toFixed(2);
 }
 
 
@@ -277,9 +375,7 @@ function Main(){
 		this.compareCanvas = document.getElementById("compare");
 		this.currentCanvas = document.getElementById("current");
 		this.go = document.getElementById("go");
-		this.t= document.getElementById("duration").value;
-
-
+		
 
 		if (this.bgCanvas.getContext) {
 			return true;
@@ -295,6 +391,8 @@ function Main(){
 		
 		this.operate = new Operate();
 		this.operate.init(this.operateCanvas,300,300,0,0,300,300,"#000000","#797979",4,2);
+
+		
 		this.operate.draw();
 
 		this.cur = new Current();
@@ -303,16 +401,26 @@ function Main(){
 
 
 		this.compare = new Compare();
-		this.compare.init(this.compareCanvas,60,60,0,0,60,60,"#fff","#fff",2,1);
+		this.compare.init(this.compareCanvas,60,60,15,6,15,60,"#fff","#fff",2,1);
 		this.compare.draw();
 
 		this.library = new Library();
 		this.library.init();
+
+
+		document.getElementById("duration").onmousemove=function  () {
+			
+			document.getElementById('result').innerHTML=document.getElementById("duration").value+"seconds";
+		}
 		var flag = false;
+
 		this.go.onclick= function(){
 			flag=!flag;
-			animate(flag,main.currentCanvas,main.compareCanvas,this.t,objtoArr(main.cur.parms).join(","),objtoArr(main.compare.parms).join(","));
+			var t=document.getElementById("duration").value;
+
+			animate(flag,main.currentCanvas,main.compareCanvas,t,objtoArr(main.cur.parms).join(","),objtoArr(main.compare.parms).join(","));
 			
+		
 			
 		}
 		
@@ -377,11 +485,10 @@ function fnMove(e,posX,posY){
 			main.cur.position.x0=(main.operate.position.x0)/5;
 			main.cur.position.y0=(main.operate.position.y0)/5;
 
-			main.cur.parms.x0 = main.cur.position.x0/12;
-			main.cur.parms.y0 = main.cur.position.y0/12;
+			main.cur.parms.x0 = (main.cur.position.x0)/60;
+			main.cur.parms.y0 = (main.cur.position.y0)/60;
 
-
-
+			setCubic(objtoArr(main.cur.parms));
 
 			main.operate.draw();
 			main.cur.draw();
@@ -392,9 +499,9 @@ function fnMove(e,posX,posY){
 			main.cur.position.x1=(main.operate.position.x1)/5;
 			main.cur.position.y1=(main.operate.position.y1)/5;
 
-			main.cur.parms.x1 = main.cur.position.x1/12;
-			main.cur.parms.y1 = main.cur.position.y1/12;
-
+			main.cur.parms.x1 = (main.cur.position.x1)/60;
+			main.cur.parms.y1 = (main.cur.position.y1)/60;
+			setCubic(objtoArr(main.cur.parms));
 			main.operate.draw();
 			main.cur.draw();
 		}

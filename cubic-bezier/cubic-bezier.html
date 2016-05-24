@@ -36,7 +36,7 @@
 			<section id="preview">
 			<h1>cubic-bezier(
 			<span id="values">
-				<span id="P1x" class="param">.17</span>,<span id="P1y" class="param">.67</span>,<span id="P2x" class="param">.83</span>,<span id="P2y" class="param">.67</span>
+				<span id="P0x" class="param1">0</span>,<span id="P0y" class="param1">0</span>,<span id="P1x" class="param2">1</span>,<span id="P1y" class="param2">1</span>
 			</span>
 			)
 			<button id="save" class="btn">SAVE</button></h1>
@@ -83,10 +83,16 @@
 
 	</div>
 
-	<div  id="importexport">
-		<textarea id="json"></textarea>
+	<div  class ="panel" id="imPanel">
+		<h4>To import curves, paste the code below and click “Import”</h4>
+		<textarea id="imJson"></textarea>
 		<button id="imbtn">import</button>
-		<button id="closebtn">close</button>
+		<button id="ImCbtn">close</button>
+	</div>
+	<div  class="panel" id="exPanel">
+		<h4>Copy the code and save to a file to export</h4>
+		<textarea id="exJson"></textarea>
+		<button id="ExCbtn">close</button>
 	</div>
 
 
