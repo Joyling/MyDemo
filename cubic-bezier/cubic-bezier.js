@@ -290,7 +290,8 @@ function Library(){
 	document.getElementById("export").onclick = function(e){
 		e.stopPropagation();
 		document.getElementById("exPanel").style.display="block";
-		document.getElementById("exJson").innerHTML = JSON.stringify(libraryData);;
+		document.getElementById("exJson").innerHTML = JSON.stringify(libraryData);
+
 	}
 	//CLOSE按钮
 	document.getElementById("ExCbtn").onclick = function(){

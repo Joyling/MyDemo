@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+    	*{
+    	    text-align:center;
+    	    font-size:30px;    
+    	}
+    	.box{
+    	    display:flex;
+    	    flex-wrap:wrap;
+    	    flex-direction:column;/*我们这里设置的排列方式竖向排列，也就是说主轴是从上到下的。*/
+    	    height:600px;
+    	    width:900px;
+    	}
+    	.header{
+    	    flex-basis:20%;/*这个属性设置的改项目占主轴长度的比例。*/
+    	    background:black;
+    	    color:rgb(255,255,255);
+    	    line-height:4.5em;
+    	}
+    	.main-content{
+    	    flex-basis:60%;
+    	    display:flex;/*中间部分又分三个模块，所以将中间部分也设置成flex布局。*/
+    	    background:yellow;
+    	    color:rgb(0,0,0);
+    	    line-height:13.5em;
+    	}
+    	.footer{
+    	    flex-basis:20%;
+    	    background:rgb(102,102,102);
+    	    color:rgb(255,255,255);
+    	    line-height:4.5em;
+    	}
+    	.child:nth-child(1){
+    	    flex-basis:20%;
+    	    background:rgb(119,187,221);
+    	}
+    	.child:nth-child(2){
+    	    flex-basis:60%;
+    	    background:rgb(214,214,214);
+    	}
+    	.child:nth-child(3){
+    	    flex-basis:20%;
+    	    background:rgb(255,102,51);
+    	}
+    </style>
+</head>
+<body>
+<div class="box">
+	<header class="header">#header</header>
+	<div class="main-content">
+		<div class="child left">#left</div>
+		<div class="child center">#center</div>
+		<div class="child right">#right</div>
+	</div>
+	<footer class="footer">#footer</footer>
+</div>
+
+
+</body>
+</html>
