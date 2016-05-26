@@ -1,0 +1,208 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 06</title>
+   </head>
+<body>
+<style type="text/css">
+	
+	.numbox{
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		text-align: center;
+		background-color: red;
+	}
+	.num{
+		color: #fff;
+		line-height: 40px;
+		margin-top: 10px;
+	}
+</style>
+
+
+<input id="writeInput" name="dir" placeholder="请输入要插入的数字">
+<div id="buttonGroup">
+	
+	<button id="leftIn">左侧入</button>
+	<button id="rightIn">右侧入</button>
+	<button id="leftOut">左侧出</button>
+	<button id="rightOut">右侧出</button>
+</div>
+
+
+
+<div id="showQueue">
+	
+
+
+</div>
+
+<div id="squareQueue">
+	
+</div>
+
+<script type="text/javascript">
+	//定义Queue类
+			function Queue(){
+
+				var items = [];
+
+				this.Arr=function(){
+					return items;
+				}
+
+				this.leftIn=function(){
+					var item = isNum();
+					if (item&&items.length<60) {
+						items.unshift(item);
+
+						
+					}else{
+						alert('请输入10到60之间的正确数字,队列长度最大为60');
+					}
+				}
+
+				this.rightIn=function(){
+					var item = isNum();
+					if (item&&items.length<60) {
+						items.push(item);
+						
+					}else{
+						alert('请输入10到60之间的正确数字,队列长度最大为60');
+					}
+				}
+
+				this.leftOut=function(){
+					if (items.length>0) {
+						alert(items.shift());
+						
+					}else{
+						alert('队列为空');
+					}
+				}
+
+				this.rightOut=function(){
+					if(items.length>0){
+						alert(items.pop());
+						
+					}else{
+						alert('队列为空');
+					}
+				}
+
+				this.delSquare=function(key){
+					var order = parseInt(key);
+					var nowLen = items.length;
+					for(;order<nowLen-1;order++)
+					{
+						items[order]=items[order+1];
+					}
+					items.length=nowLen-1;
+				}
+			}
+
+			//创建Queue类
+			var queue = new Queue(); 
+
+			function addClickEvent(){
+				
+				var btngroup = document.getElementById('buttonGroup');
+				addEventHandler(btngroup,'click',function(ele){
+					var ele = ele||window.event;
+					var target = ele.target||ele.srcElement;
+					if(target.nodeName.toLowerCase()=='button'){
+						var targetId = target.id;
+						switch(targetId){
+							case 'leftIn':
+							queue.leftIn();
+							render();
+							break;	
+
+							case 'rightIn':
+							queue.rightIn();
+							render();
+							break;
+
+							case 'leftOut':
+							queue.leftOut();
+							render();
+							break;
+
+							case 'rightOut':
+							queue.rightOut();
+							render();
+							break;
+
+						}
+					}
+				})
+			}
+
+
+			function isNum(){
+				var writeInput = document.getElementById('writeInput').value;
+				if (!isNaN(writeInput)) {
+					return writeInput;
+				}else{
+					alert('请输入正确数字');
+				}
+
+			} 
+
+	
+
+	function render(){
+		var text = '';
+		var items = queue.Arr();
+
+		for(key in items){
+			text += '<div class="numbox" style="cursor:hand" title="删除" data-key = '+ key+ '><span class="num" style="cursor:hand">'+items[key] +'</span></div>'
+		}
+		var showQueue = document.getElementById('showQueue');
+		console.log(text);
+		showQueue.innerHTML = text;
+	}
+	
+	/* 添加事件处理程序 */
+	function addEventHandler(element,type,handler){
+	    if(element.addEventListener){
+	        element.addEventListener(type,handler,false);
+	    }else if(element.attachEvent){
+	        element.attachEvent("on"+type,handler);
+	    }else{
+	        element["on" + type] = handler;
+	    }
+	}
+
+	function clickSquare(){
+		
+		var showQueue = document.getElementById('showQueue');
+		
+		addEventHandler(showQueue,'click',function(){
+
+			var ele = ele||window.event;
+			var target = ele.target||ele.srcElement;
+
+			if(target.className.toLowerCase() == 'numbox'||target.className.toLowerCase() == 'num'){
+				queue.delSquare(target.dataset.key);
+				render();
+			}
+
+		});
+	}
+
+	
+	function init(){
+		addClickEvent();
+		clickSquare();
+	}
+	init();
+
+
+</script>
+</body>
+
+</html>

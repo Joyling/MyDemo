@@ -1,0 +1,39 @@
+td{
+	width: 60px;
+	height: 58px;
+	text-align: center;
+}
+
+tr:nth-child(n+2)>td:nth-child(n+2){
+	border: 1px solid #ccc;	
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+
+#control{
+	
+	margin-top: 20px;
+}
+
+#wrap{
+	width: 660px;
+	margin: 0 auto;
+	position: relative;
+}
+
+#control{
+	width: 100%;
+	position: absolute;
+	left: 60px;
+}
+
+#current{
+	width: 50px;
+	height: 60px;
+	background-color: red;
+	border-left: 10px solid blue;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}

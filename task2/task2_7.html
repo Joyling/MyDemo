@@ -1,0 +1,352 @@
+<!DOCTYPE>
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 07</title>
+
+    <style type="text/css">
+	body{
+		width: 100%;
+	}
+	#showQueue {
+		height: 100px;
+	    display: flex;
+	    overflow: hidden;
+	    box-sizing: border-box;
+	    padding: 0 60px;
+	    align-items: flex-end;
+	    justify-content: space-around;
+	}
+	
+	.chat_item {
+	    position: relative;
+	    display: inline-block;
+	    bottom: 0;
+	    width: 100px;
+	    flex-direction: row;
+	    flex-wrap: wrap;
+	    cursor: pointer;
+	    box-shadow: 1px 1px 1px #999;
+	    margin: 1px;
+	}
+
+	#squareQueue{
+		width: 60%;
+		margin: 10px auto;
+	}
+
+	.numbox{
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		background-color: red;
+		margin-right: 10px;
+		text-align: center;
+		margin-top: 10px;
+	}
+
+	.num{
+		color: #fff;
+		line-height: 40px;
+	}
+
+	h2{
+		text-align: center;
+	}
+	</style>
+  </head>
+
+	<body>
+
+		<input id="writeInput" name="dir" placeholder="请输入要插入的数字">
+		
+		<div id="buttonGroup">
+			
+			<button id="leftIn">左侧入</button>
+			<button id="rightIn">右侧入</button>
+			<button id="leftOut">左侧出</button>
+			<button id="rightOut">右侧出</button>
+			<button id="sortNum">排序</button>
+			<button id="random">随机生成一组数字</button>
+			<button id="empty">清空数据</button>
+		</div>
+
+		<div id="showQueue"></div>
+
+		<div id="squareQueue"></div>
+
+		<script type="text/javascript">
+			//定义Queue类
+			function Queue(){
+				var items = [];
+				var flag = 0;
+				var clickCount = 0;//避免触发排序函数
+				this.Arr=function(){
+					return items;
+				}
+				this.leftIn=function(){
+					var item = isNum();
+					if (item&&items.length<60) {
+						items.unshift(item);
+						render();
+					}else{
+						alert('请输入10到60之间的正确数字,队列长度最大为60');
+					}
+				}
+
+				this.rightIn=function(){
+					var item = isNum();
+					if (item&&items.length<60) {
+						items.push(item);
+						
+					}else{
+						alert('请输入10到60之间的正确数字,队列长度最大为60');
+					}
+				}
+
+
+				this.leftOut=function(){
+					if (items.length>0) {
+						alert(items.shift());
+						
+					}else{
+						alert('队列为空');
+					}
+				}
+
+
+				this.rightOut=function(){
+					if(items.length>0){
+						alert(items.pop());
+						
+					}else{
+						alert('队列为空');
+					}
+				}
+
+				this.getRandom=function(){
+					for(i=0;i<=50;i++){
+						items[i]=Math.floor(Math.random()*51+9);
+					}
+					
+				}
+
+
+				this.sortNum=function(){
+					if(clickCount==0){
+						var len = items.length;
+						var i = 0;
+						var timeHandler;
+						sortNum.oneStep = function(){
+							render();
+							var temp = items[i];
+							var k = i;
+							for(var j=i+1;j<len;j++){
+								if(items[j]<temp&&flag==0){
+									temp = items[j];
+									k = j;
+								}else if(items[j>temp&&flag==1]){
+									temp = items[j];
+									k=j;
+								}
+							}
+							
+							items.splice(k,1);
+							items.unshift(temp);
+							document.getElementById("showQueue").childNodes[k].style.background = "red";
+							document.getElementById("squareQueue").childNodes[k].style.background = "red";
+							
+							i++;
+							clickCount++;
+							console.log(flag);
+							if(i===len){
+								clickCount = 0;
+								clearInterval(timeHandler);
+								render();
+								if(flag == 0){
+									flag=1;
+								}else if(flag == 1){
+									flag = 0;
+								}
+							}
+						}
+
+						timeHandler = setInterval('sortNum.oneStep()',50);
+					}
+					
+				}
+
+
+				this.empty=function(){
+					items=[];
+				
+				}
+
+				this.delSquare=function(key){
+				
+					var order = parseInt(key);
+					var nowLen = items.length;
+					for(;order<nowLen-1;order++)
+					{
+						items[order]=items[order+1];
+					}
+					items.length=nowLen-1;
+				}
+
+			
+			}
+
+			//创建Queue类
+			var queue = new Queue(); 
+
+			/*给按钮添加点击事件，通过事件委托，给每个按钮添加不同的响应事件*/
+			function addClickEvent(){
+				
+				var btngroup = document.getElementById('buttonGroup');
+				addEventHandler(btngroup,'click',function(ele){
+					
+					var ele = ele||window.event;
+					var target = ele.target||ele.srcElement;
+					if(target.nodeName.toLowerCase()=='button'){
+						var targetId = target.id;
+						switch(targetId){
+							case 'leftIn':
+							queue.leftIn();
+							render();
+							break;	
+
+							case 'rightIn':
+							queue.rightIn();
+							render();
+							break;
+
+							case 'leftOut':
+							queue.leftOut();
+							render();
+							break;
+
+							case 'rightOut':
+							queue.rightOut();
+							render();
+							break;
+
+							case 'sortNum':
+							queue.sortNum();
+							render();
+							break;
+
+							case 'random':
+							queue.getRandom();
+							render();
+							break;
+
+							case 'empty':
+							queue.empty();
+							render();
+							break;
+						}
+					}
+				})
+			}
+
+
+			//判断输入是否正确
+			function isNum(){
+				var writeInput = document.getElementById('writeInput').value;
+				if (!isNaN(writeInput)&&writeInput>=10&&writeInput<=60) {
+					return writeInput;
+				}
+
+			} 
+
+
+			//给方块添加删除功能
+
+
+			function clickSquare(){
+				
+				var showQueue = document.getElementById('squareQueue');
+				
+				addEventHandler(showQueue,'click',function(){
+
+					var ele = ele||window.event;
+					var target = ele.target||ele.srcElement;
+
+					if(target.className.toLowerCase() == 'numbox'){
+						queue.delSquare(target.dataset.key);
+						render();
+					}
+
+				});
+			}
+
+
+			//渲染图表
+			function render() {
+					var items = queue.Arr();
+					var showQueue = document.getElementById('showQueue');
+					var squareQueue = document.getElementById('squareQueue');
+				    var color='';
+				    text1='';
+				    text2='';
+				    for(var item in items) {        //遍历每个chartData数据
+				        
+				         text1+='<div class="chat_item"  style="height: '+items[item]+'px;background-color:'+chartColor(items[item])+'"></div>';
+
+				         text2+='<div class="numbox" data-key='+item+' title="删除该项"; style="background-color:'+chartColor(items[item])+'">'+'<span class="num">'+items[item]+'</span></div>';
+		   			 }
+		   			 text2+='<h2>现有元素'+items.length+'个，最多输入60个';
+		   			 showQueue.innerHTML = text1;
+		   			 squareQueue.innerHTML = text2;
+
+		  }
+
+		  //为柱选定颜色
+		  function chartColor(height){
+		  	
+		  	switch(Math.floor(height/10)){
+		  		case 1:
+		  		return "#441d49";
+		  		break;
+		  		case 2:
+		  		return "#538289";
+		  		break;
+		  		case 3:
+		  		return "#a02730";
+		  		break;
+		  		case 4:
+		  		return "#73832a";
+		  		break;
+		  		case (5):
+		  		 return "#10193a";
+		  		 break;
+		  		 default:
+		  		 return "#10193a";
+		  	}
+		  }
+			
+			/* 添加事件处理程序 */
+			function addEventHandler(element,type,handler){
+			    if(element.addEventListener){
+			        element.addEventListener(type,handler,false);
+			    }else if(element.attachEvent){
+			        element.attachEvent("on"+type,handler);
+			    }else{
+			        element["on" + type] = handler;
+			    }
+			}
+
+			
+			function init(){
+				addClickEvent();
+				clickSquare();	
+			}
+			init();
+
+
+		</script>
+	</body>
+
+</html>

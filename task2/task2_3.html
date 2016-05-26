@@ -1,0 +1,160 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 01</title>
+  </head>
+<body>
+
+  <ul id="source">
+    <li>北京空气质量：<b>90</b></li>
+    <li>上海空气质量：<b>70</b></li>
+    <li>天津空气质量：<b>80</b></li>
+    <li>广州空气质量：<b>50</b></li>
+    <li>深圳空气质量：<b>40</b></li>
+    <li>福州空气质量：<b>32</b></li>
+    <li>成都空气质量：<b>90</b></li>
+  </ul>
+
+  <ul id="resort">
+    <!-- 
+    <li>第一名：北京空气质量：<b>90</b></li>
+    <li>第二名：北京空气质量：<b>90</b></li>
+    <li>第三名：北京空气质量：<b>90</b></li>
+     -->
+
+  </ul>
+
+  <button id="sort-btn">排序</button>
+
+<script type="text/javascript">
+/**
+ * getData方法
+ * 读取id为source的列表，获取其中城市名字及城市对应的空气质量
+ * 返回一个数组，格式见函数中示例
+ */
+function getData() {
+  /*
+  coding here
+  */
+  var data = [];
+  var str = '空气质量';
+  var lis = document.querySelectorAll('#source li');
+  for(i = 0;i<lis.length;i++){
+    data.push(lis[i].innerText.replace(str,'').split('：'));
+  }
+  /*
+  data = [
+    ["北京", 90],
+    ["北京", 90]
+    ……
+  ]
+  */
+  return data;
+}
+
+/**
+ * sortAqiData
+ * 按空气质量对data进行从小到大的排序
+ * 返回一个排序后的数组
+ */
+function sortAqiData(data) {
+  return data.sort(function(a,b){
+    return parseInt(a[1])-parseInt(b[1]);
+  });
+}
+
+/**
+ * render
+ * 将排好序的城市及空气质量指数，输出显示到id位resort的列表中
+ * 格式见ul中的注释的部分
+ */
+function render(data) {
+  var newData = sortAqiData(data);
+  var text = "";
+  
+  for(var j=0; j<newData.length;j++){
+    text += '<li>第' + Utils.numberToChinese(j+1) +'名：' + newData[j][0] + '空气质量:' + '<b>' + newData[j][1] + '</b>' + '</li>'
+  }
+  document.getElementById('resort').innerHTML = "";
+  document.getElementById('resort').innerHTML = text;
+}
+
+function btnHandle() {
+  var aqiData = getData();
+  aqiData = sortAqiData(aqiData);
+  render(aqiData);
+}
+
+var Utils={  
+    /* 
+        单位 
+    */  
+    units:'个十百千万@#%亿^&~',  
+    /* 
+        字符 
+    */  
+    chars:'零一二三四五六七八九',  
+    /* 
+        数字转中文 
+        @number {Integer} 形如123的数字 
+        @return {String} 返回转换成的形如 一百二十三 的字符串              
+    */  
+    numberToChinese:function(number){  
+        var a=(number+'').split(''),s=[],t=this;  
+        console.log(t);
+        if(a.length>12){  
+            throw new Error('too big');  
+        }else{  
+            for(var i=0,j=a.length-1;i<=j;i++){  
+                if(j==1||j==5||j==9){//两位数 处理特殊的 1*  
+                    if(i==0){  
+                        if(a[i]!='1')s.push(t.chars.charAt(a[i]));  
+                    }else{  
+                        s.push(t.chars.charAt(a[i]));  
+                    }  
+                }else{  
+                    s.push(t.chars.charAt(a[i]));  
+                }  
+                if(i!=j){  
+                    s.push(t.units.charAt(j-i));  
+                }  
+            }  
+        }  
+        //return s;  
+        return s.join('').replace(/零([十百千万亿@#%^&~])/g,function(m,d,b){//优先处理 零百 零千 等  
+            b=t.units.indexOf(d);  
+            if(b!=-1){  
+                if(d=='亿')return d;  
+                if(d=='万')return d;  
+                if(a[j-b]=='0')return '零'  
+            }  
+            return '';  
+        }).replace(/零+/g,'零').replace(/零([万亿])/g,function(m,b){// 零百 零千处理后 可能出现 零零相连的 再处理结尾为零的  
+            return b;  
+        }).replace(/亿[万千百]/g,'亿').replace(/[零]$/,'').replace(/[@#%^&~]/g,function(m){  
+            return {'@':'十','#':'百','%':'千','^':'十','&':'百','~':'千'}[m];  
+        }).replace(/([亿万])([一-九])/g,function(m,d,b,c){  
+            c=t.units.indexOf(d);  
+            if(c!=-1){  
+                if(a[j-c]=='0')return d+'零'+b  
+            }  
+            return m;  
+        });  
+    }  
+};  
+
+function init() {
+
+  // 在这下面给sort-btn绑定一个点击事件，点击时触发btnHandle函数
+  document.getElementById('sort-btn').onclick = function(){
+    btnHandle();
+  };
+}
+
+init();
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>task2_21听指令的小方块1</title>
+	<meta charset="utf-8">
+</head>
+<style type="text/css">
+
+td{
+	width: 60px;
+	height: 58px;
+	text-align: center;
+}
+
+tr:nth-child(n+2)>td:nth-child(n+2){
+	border: 1px solid #ccc;	
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+
+#control{
+	
+	margin-top: 20px;
+}
+
+#wrap{
+	width: 660px;
+	margin: 0 auto;
+	position: relative;
+}
+
+#control{
+	width: 100%;
+	position: absolute;
+	left: 60px;
+}
+
+#current{
+	width: 50px;
+	height: 60px;
+	background-color: red;
+	border-left: 10px solid blue;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+#order{
+	background: black;
+	color: green;
+	width: 400px;
+	height: 100px;
+}
+#row{
+	display: inline-block;
+	background-color: gray;
+	width: 20px;
+	height: 100px;
+	overflow: hidden;
+	color: #fff;
+	text-align: center;
+}
+
+
+</style>
+<body>
+<div id="wrap">
+	<table border="0" cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<th></th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>6</th>
+				<th>7</th>
+				<th>8</th>
+				<th>9</th>
+				<th>10</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>
+					<div id="current"></div>
+				</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>4</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>5</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>6</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>7</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>8</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>9</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>10</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	    
+	</table>
+
+	<div id="control">
+		<div id="row"></div>
+		<textarea  id="order"></textarea>
+		<button id="start">执行</button>
+	
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+var curBlock = document.getElementById('current');
+var btnOrder = document.getElementById('start');
+
+var Block = {
+	"direction":{
+		"lef":0
+	},
+	"face":"lef",
+	"rot":0,
+	"position":{
+		"x":1,
+		"y":1
+	}
+	
+}
+var square = {
+	"width":60,
+	"height":60
+}
+var Wall = {
+	
+	"boundry":10
+}
+document.getElementById('current').style.transition="all,1s,ease";
+document.getElementById('order').onkeyup=function(){
+	rowChange();
+}
+document.getElementById('order').onscroll=function(){
+	var top = this.scrollTop;
+	document.getElementById('row').scrollTop = top;
+}
+function rowChange(){
+	var rowArr = strtoArr();
+	var text = "";
+	for(var i=0;i<rowArr.length;i++){
+		text+="<div>"+i+"</div>";
+	}
+	document.getElementById('row').innerHTML=text;
+
+}
+function strtoArr(){
+	var inputCon = document.getElementById('order').value.toLowerCase();
+	inputCon=inputCon.replace(/\r\n/g,"<BR>")  
+	 inputCon=inputCon.replace(/\n/g,"<BR>");
+	var inputArr = inputCon.split("<BR>");
+	if(inputArr.reverse()[0]==''){
+		inputArr.splice(0,1);
+	}
+	
+	return inputArr.reverse();
+}
+
+btnOrder.onclick=function(){
+	var i=0
+	var timer = setInterval(function(){
+		if(i<strtoArr().length){
+			command(i);
+			i++;
+		}else{
+			clearInterval(timer);
+		}
+		
+	},1000)
+
+}
+
+function moveTo(face,step){
+
+	switch(face){
+		case 'lef':
+		Block["position"]["x"]-=step;
+		break;
+		case 'rig':
+		Block["position"]["x"]+=step;
+		break;
+		case 'top':
+		Block["position"]["y"]-=step;
+		break;
+		case 'bot':
+		Block["position"]["y"]+=step;
+		break;
+	}
+	render();
+}
+
+function  trans (dir,step) {
+	switch(dir){
+		case 'lef':
+		Block["position"]["x"]-=step;
+		break;
+		case 'rig':
+		Block["position"]["x"]+=step;
+		break;
+		case 'top':
+		Block["position"]["y"]-=step;
+		break;
+		case 'bot':
+		Block["position"]["y"]+=step;
+		break;
+
+	}
+	render();
+}
+
+
+function rotate(dir,step){
+	var deg=0;
+	if(step==0){
+		switch(dir){
+			case 'lef':
+			Block["rot"]-=1;
+			break;
+			case 'rig':
+			Block["rot"]+=1;
+			break;
+			case 'bac':
+			Block["rot"]+=2;
+			break;
+
+		}
+	}else{
+		switch(dir){
+			case 'lef':
+			Block["rot"]=0;
+			break;
+			case 'rig':
+			Block["rot"]=2;
+			break;
+			case 'bot':
+			Block["rot"]=3;
+			break;
+			case 'top':
+			Block["rot"]=1;
+			break;
+
+		}
+	}
+	
+
+	
+	switch(Math.abs(Block["rot"])%4){
+		case 0:Block["face"]="lef";
+		break;
+		case 1:
+		case -3:
+		Block["face"]="top";
+		break;
+		case 2:
+		case -2:
+		Block["face"]="rig";
+		break;
+		case 3:
+		case -1:
+		Block["face"]="bottom";
+	}
+	render();
+}
+function render(){
+	Block['position']['x']=(Block['position']['x']<1?1:Block['position']['x']);
+	Block['position']['x']=(Block['position']['x']>Wall["boundry"]?Wall["boundry"]:Block['position']['x']);
+	Block['position']['y']=(Block['position']['y']<1?1:Block['position']['y']);
+	Block['position']['y']=(Block['position']['y']>Wall["boundry"]?Wall["boundry"]:Block['position']['y']);
+
+
+	curBlock.style.transform="rotate("+Block["rot"]*90+"deg)";
+	curBlock.style.left=(Block["position"]["x"]-1)*square["width"]+"px";
+	curBlock.style.top=(Block["position"]["y"]-1)*square["height"]+"px";
+}
+
+function command(i){
+
+	var divs = document.getElementById('row').getElementsByTagName('div');
+	var arr = strtoArr();
+	var subArr = arr[i].split(" ");
+	var step =0;
+
+	var lastItem = subArr[subArr.length-1];
+	if(!isNaN(lastItem)){
+		subArr.pop();
+		step = lastItem;
+	}
+	if(subArr[0]=='go'&&(subArr.length==1||subArr.length==2)){
+		if(subArr.length==2){
+			step = subArr[1];
+		}
+		moveTo(Block["face"],step);
+	}else if(subArr.length==2){
+		var method = subArr[0];
+		var dir = subArr[1];
+	}else{
+		divs[i].style.backgroundColor="red";
+	}
+step = parseInt(step);
+	switch(method){
+		case 'mov':
+		rotate(dir,step);
+		moveTo(dir,step);
+		break;
+		case 'tra':
+		trans(dir,step);
+		break;
+		case 'tun':
+		rotate(dir,step);
+		break;
+		
+
+	}
+	
+}
+
+
+
+</script>
+</body>
+</html>

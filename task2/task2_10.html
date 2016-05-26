@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>task2_10</title>
+    
+    <style type="text/css">
+    body{
+    	width: 100%;
+    }
+    .tree{
+    	width: 50%;
+    	display: flex;
+    	padding: 20px;
+    	margin:0 20px;
+    	border: 1px solid black;
+    }
+    .root{
+    	width: 1200px;
+    	height: 240px;
+    	display: flex;
+ 		margin: 40px auto;
+ 		padding: 20px;
+ 		border: 1px solid black;
+    }
+    .son_1{
+    	height: 200px;
+    }
+    .son_2{
+    	height: 160px;
+    }
+    .son_3{
+    	height: 120px;
+    }
+    </style>
+</head>
+<body>
+    <div class="root">
+        <div class="tree son_1">
+            <div class="tree son_2">
+                <div class="tree son_3"></div>
+                <div class="tree son_3"></div>
+            </div>
+            <div class="tree son_2">
+                <div class="tree son_3"></div>
+                <div class="tree son_3"></div>
+            </div>
+        </div>
+        <div class="tree son_1">
+            <div class="tree son_2">
+                <div class="tree son_3"></div>
+                <div class="tree son_3"></div>
+            </div>
+            <div class="tree son_2">
+                <div class="tree son_3"></div>
+                <div class="tree son_3"></div>
+            </div>
+        </div>
+    </div>
+    <div id="btnGroup">
+    	<input id="preOrder" type="button" value="前序">
+    	<input id="inOrder" type="button" value="中序">
+    	<input id="postOrder" type="button" value="后序">
+    	<input id="timeSelect" type="text" placeholder="输入遍历速度（单位：s）" value="1"><label>秒（s）</label>
+    </div>
+    
+
+   <script type="text/javascript">
+
+
+
+
+   //封装事件处理程序
+   var result = [];
+   var timer = null;
+   var root = document.querySelector('.root');
+   var EventUtil = {
+   	addHandler:function(element,type,handler){
+   		if(element.addEventListener){
+   		    element.addEventListener(type,handler,false);
+   		}else if(element.attachEvent){
+   		    element.attachEvent("on"+type,handler);
+   		}else{
+   		    element["on" + type] = handler;
+   		}
+   	},
+   	getEvent:function(event){
+   		return event?event:window.event;
+   	},
+   	getTarget:function(event){
+   		return event.target||event.srcElement;
+   	}
+   }
+
+   function preOrderTraverse(node){
+
+   		result.push(node);
+   		if(node.firstElementChild !== null){
+   			preOrderTraverse(node.firstElementChild);
+   		}
+   		if(node.lastElementChild !== null){
+   			preOrderTraverse(node.lastElementChild);
+   		}
+
+   }
+   function inOrderTraverse(node){
+   		
+   		if(node.firstElementChild !== null){
+   			inOrderTraverse(node.firstElementChild);
+   		}
+   		result.push(node);
+   		if(node.lastElementChild !== null){
+   			inOrderTraverse(node.lastElementChild);
+   		}
+
+   }
+
+   function postOrderTraverse(node){
+   		
+   		if(node.firstElementChild !== null){
+   			postOrderTraverse(node.firstElementChild);
+   		}
+   		
+   		if(node.lastElementChild !== null){
+   			postOrderTraverse(node.lastElementChild);
+   		}
+   		result.push(node);
+
+   }
+
+
+
+  	function btnClick(){
+  		var btnGroup = document.getElementById('btnGroup');
+  		EventUtil.addHandler(btnGroup,'click',function(e){
+  			e = EventUtil.getEvent(e);
+  			target = EventUtil.getTarget(e);
+  			switch(target.id){
+  				case 'preOrder':
+  				clearBg();
+  				clearInterval(timer);
+  				preOrderTraverse(root);
+  				render();
+  				break;
+  				case 'inOrder':
+  				clearBg();
+  				clearInterval(timer);
+  				inOrderTraverse(root);
+  				render();
+  				break;
+  				case 'postOrder':
+  				clearBg();
+  				clearInterval(timer);
+  				postOrderTraverse(root);
+  				render();
+  				break;
+  				case 'timeSelect':
+  				timeSelect();
+  				break;
+  			}
+  		});
+  	}
+  	function timeSelect(){
+  		var ts = document.getElementById('timeSelect').value;
+  		var reg = new RegExp("^[0-9]*$");
+  		if(!reg.test(ts)){
+  			ts=1;
+  		}
+  		document.getElementById('timeSelect').value = ts;
+  		ts = ts + '000';
+  		return ts;
+
+  	}
+  	function render(){
+  		var i=0;
+  		var nodes = result;
+  		result=[];
+  		nodes[i].style.backgroundColor = "blue";
+  		timer = setInterval(function(){
+  			
+  			i++;
+  			if(i<nodes.length){
+  				nodes[i].style.backgroundColor = "blue";
+  				nodes[i-1].style.backgroundColor = "#fff";
+  			}else{
+  				clearInterval(timer);
+  			}
+  		},parseInt(timeSelect()))	
+  	}
+  	function clearBg(){
+  		var divLis = document.getElementsByTagName('div');
+  		for(var i=0;i<divLis.length;i++){
+  			divLis[i].style.background = "#fff";
+  		}
+
+  	}
+
+  	function init(){
+  		btnClick();
+  		clearBg();
+  	}
+  	init();
+   </script>
+</body>
+</html>

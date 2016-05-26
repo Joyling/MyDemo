@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script>
+        window.onload = function () {
+            console.log("body的childNodes");
+            var oItems = document.getElementsByTagName('tr')[1].childNodes;
+            for (var i = 0; i < oItems.length; i++) {
+                console.log("nodeType:" + oItems[i].nodeType);
+                console.log("nodeName:" + oItems[i].nodeName);
+                console.log("nodeValue:'" + oItems[i].nodeValue + "'");
+                console.log(i);
+            }
+         
+         
+        };
+
+    
+    </script>
+</head>
+<body>
+    <h1>h1</h1><span>span</span><span>span</span><!--这是一个注释-->123<div class="class1" title="title1"><span></span></div>
+    <table>
+        <tr>
+            <th></th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td><div id="current"></div></td>
+            <td></td>
+            <td>
+                
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        </table>
+</body>
+</html>

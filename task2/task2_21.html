@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>task2_21听指令的小方块1</title>
+	<meta charset="utf-8">
+</head>
+<style type="text/css">
+	td{
+		width: 60px;
+		height: 58px;
+		text-align: center;
+	}
+
+	tr:nth-child(n+2)>td:nth-child(n+2){
+		border: 1px solid #ccc;	
+		position: relative;
+		top: 0px;
+		left: 0px;
+	}
+
+	#control{
+		
+		margin-top: 20px;
+	}
+
+	#wrap{
+		width: 660px;
+		margin: 0 auto;
+		position: relative;
+	}
+
+	#control{
+		width: 100%;
+		position: absolute;
+		left: 60px;
+	}
+
+	#current{
+		width: 50px;
+		height: 60px;
+		background-color: red;
+		border-left: 10px solid blue;
+		position: absolute;
+		left: 0px;
+		top: 0px;
+	}
+
+
+
+
+</style>
+<body>
+<div id="wrap">
+	<table border="0" cellpadding="0" cellspacing="0">
+		<tbody>
+			<tr>
+				<th></th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>6</th>
+				<th>7</th>
+				<th>8</th>
+				<th>9</th>
+				<th>10</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>
+					<div id="current"></div>
+				</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>4</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>5</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>6</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>7</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>8</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>9</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>10</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	    
+	</table>
+
+	<div id="control">
+		<input id="order">
+		<button id="start">执行</button>
+		
+		
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+var curBlock = document.getElementById('current');
+var btnOrder=document.getElementById('start');
+
+var Block = {
+	"direction":{
+		"left":0
+	},
+	"face":"left",
+	"rot":0,
+	"position":{
+		"x":1,
+		"y":1
+	}
+	
+}
+var square = {
+	"width":60,
+	"height":60
+}
+var Wall = {
+	
+	"boundry":10
+}
+
+function moveTo(face,step){
+	switch(face){
+		case 'left':
+		Block["position"]["x"]-=step;
+		break;
+		case 'right':
+		Block["position"]["x"]+=step;
+		break;
+		case 'top':
+		Block["position"]["y"]-=step;
+		break;
+		case 'bottom':
+		Block["position"]["y"]+=step;
+		break;
+	}
+	render();
+}
+
+function rotate(deg){
+	
+
+	Block["rot"]+=deg;
+	if(Math.abs(Block["rot"])%360==0){
+		Block["rot"]=0;
+	}
+	switch(Block["rot"]){
+		case 0:Block["face"]="left";
+		break;
+		case 90:
+		case -270:
+		Block["face"]="top";
+		break;
+		case 180:
+		case -180:
+		Block["face"]="right";
+		break;
+		case 270:
+		case -90:
+		Block["face"]="bottom";
+	}
+	render();
+}
+function render(){
+	Block['position']['x']=(Block['position']['x']<1?1:Block['position']['x']);
+	Block['position']['x']=(Block['position']['x']>Wall["boundry"]?Wall["boundry"]:Block['position']['x']);
+	Block['position']['y']=(Block['position']['y']<1?1:Block['position']['y']);
+	Block['position']['y']=(Block['position']['y']>Wall["boundry"]?Wall["boundry"]:Block['position']['y']);
+
+
+	curBlock.style.transform="rotate("+Block["rot"]+"deg)";
+	curBlock.style.left=(Block["position"]["x"]-1)*square["width"]+"px";
+	curBlock.style.top=(Block["position"]["y"]-1)*square["height"]+"px";
+}
+
+btnOrder.onclick=function(){
+		var order = document.getElementById('order').value;
+		
+			switch (order){
+				case 'tun lef':
+				rotate(-90);
+				break;
+				case 'tun rig':
+				rotate(90);
+				break;
+				case 'tun bac':
+				rotate(180);
+				break;
+				case 'go':
+				moveTo(Block["face"],1);
+				break;
+			}
+		
+	
+	}
+</script>
+</body>
+</html>

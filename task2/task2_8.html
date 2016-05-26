@@ -1,0 +1,256 @@
+<!DOCTYPE>
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 08</title>
+
+    <style type="text/css">
+	body{
+		width: 100%;
+	}
+
+	#squareQueue{
+		width: 60%;
+		margin: 10px auto;
+	}
+
+	.numbox{
+		margin: 10px;
+		padding: 10px;
+		background-color: red;
+		text-align: center;
+		float: left;
+		color: #fff;
+	}
+
+	
+	</style>
+  </head>
+
+	<body>
+
+		<textarea id="inputCon" placeholder="请输入数字、中文、英文可以通过用回车，逗号（全角半角均可），顿号，空格（全角半角、Tab等均可）等符号作为不同内容的间隔"></textarea>
+		
+		<div id="buttonGroup">
+			
+			<button id="leftIn">左侧入</button>
+			<button id="rightIn">右侧入</button>
+			<button id="leftOut">左侧出</button>
+			<button id="rightOut">右侧出</button>
+			<input placeholder="请输入查询内容" id="searchCon"><button id="search">查询</button>
+			<button id="empty">清空数据</button>
+
+		</div>
+
+		<div id="squareQueue"></div>
+
+		<script type="text/javascript">
+			var queue = new Queue();
+			/* 添加事件处理程序 */
+			function addEventHandler(element,type,handler){
+			    if(element.addEventListener){
+			        element.addEventListener(type,handler,false);
+			    }else if(element.attachEvent){
+			        element.attachEvent("on"+type,handler);
+			    }else{
+			        element["on" + type] = handler;
+			    }
+			}
+
+			/*给按钮添加点击事件，通过事件委托，给每个按钮添加不同的响应事件*/
+			function addClickEvent(){
+				
+				var btngroup = document.getElementById('buttonGroup');
+				
+				addEventHandler(btngroup,'click',function(ele){
+					
+					var ele = ele||window.event;
+					var target = ele.target||ele.srcElement;
+					if(target.nodeName.toLowerCase()=='button'){
+						var targetId = target.id;
+						switch(targetId){
+							case 'leftIn':
+							queue.leftIn();
+							render();
+							break;	
+
+							case 'rightIn':
+							queue.rightIn();
+							render();
+							break;
+
+							case 'leftOut':
+							queue.leftOut();
+							render();
+							break;
+
+
+							case 'rightOut':
+							queue.rightOut();
+							render();
+							break;
+
+				
+							case 'search':
+							queue.searchItem();
+							
+							break;
+
+							case 'empty':
+							queue.empty();
+							render();
+							break;
+						}
+					}
+				})
+			}
+
+			/*检测输入*/
+			function checkInput(){
+				var inputCon = document.getElementById('inputCon').value;
+				var reg = new RegExp("[^\n\r\s 、,，0-9A-Za-z\u4e00-\u9fa5]");
+				var isBlank = new RegExp("^[\n\r\s ,，、]*$");
+			    if(reg.test(inputCon)){
+				        alert("输入的内容只能包含数字、中文、英文");
+				        return false;
+				    }
+				    else if(isBlank.test(inputCon)){
+				        alert("无法输入空数据");
+				        return false;
+				    }
+				    else{
+				        return true;
+				    }
+			}
+
+			/*将输入的正确字符转为数组*/
+			function strtoArr(){
+				var inputCon = document.getElementById('inputCon').value;
+				var inputArr = inputCon.split(/[\s\r\n、,，]+/);
+				if(inputArr.reverse()[0]==''){
+					inputArr.splice(0,1);
+				}
+				
+				return inputArr.reverse();
+			}
+			
+
+			//定义Queue类
+			function Queue(){
+				var items = [];
+				this.Arr=function(){
+					return items;
+				}
+				this.leftIn=function(){
+					if(checkInput()){
+						for(item in strtoArr()){
+							items.unshift(strtoArr()[item]);
+						}
+					}
+					
+				}
+
+				this.rightIn=function(){
+					if(checkInput()){
+						for(item in strtoArr()){
+							items.push(strtoArr()[item]);
+						}
+					}
+				}
+
+
+				this.leftOut=function(){
+					if (items.length>0) {
+						alert(items.shift());
+					}
+				}
+
+
+				this.rightOut=function(){
+					if(items.length>0){
+						alert(items.pop());
+					}
+				}
+
+
+				this.empty=function(){
+					items=[];
+				
+				}
+
+				this.delSquare=function(key){
+					console.log(key);
+					var order = parseInt(key);
+					var nowLen = items.length;
+					for(;order<nowLen-1;order++)
+					{
+						items[order]=items[order+1];
+					}
+					items.length=nowLen-1;
+				}
+
+				this.searchItem=function(){
+					var divs =document.getElementById('squareQueue').getElementsByTagName('div');
+					var searchCon = document.getElementById('searchCon').value;
+					for(var i=0;i<divs.length;i++){
+						if(divs[i].innerHTML.match(searchCon)){
+							divs[i].style.background= "#cc8091";
+
+						}
+					}
+				}
+
+			
+			}
+
+			/*渲染*/
+			function render(){
+				var text = "";
+				var items = queue.Arr();
+				var squareQueue = document.getElementById('squareQueue');
+				var searchItem = document.getElementById('searchCon').value;
+				for(item in items)
+					{
+						text += '<div class = "numbox" data-key ='+item+'>'+items[item]+'</div>' ;
+					}
+					
+			
+				squareQueue.innerHTML = text;
+
+			}
+
+			//给方块添加删除功能
+
+			function clickSquare(){
+				
+				var squareQueue = document.getElementById('squareQueue');
+				
+				addEventHandler(squareQueue,'click',function(){
+
+					var ele = ele||window.event;
+					var target = ele.target||ele.srcElement;
+
+					if(target.className.toLowerCase() == 'numbox'){
+						queue.delSquare(target.dataset.key);
+						render();
+					}
+
+				});
+			}
+
+			function init(){
+				addClickEvent();
+				clickSquare();
+			}
+
+			init();
+
+			
+		</script>
+
+		
+	</body>
+
+</html>

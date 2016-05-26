@@ -1,0 +1,332 @@
+<!DOCTYPE>
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 09</title>
+
+    <style type="text/css">
+	body{
+		width: 100%;
+	}
+
+	#main{
+		width: 80%;
+		margin: 0 auto;
+	}
+	#squareQueue{
+		margin: 10px auto;
+		overflow: auto;
+	}
+	.numbox{
+		float: left;
+		margin: 10px;
+		padding: 10px;
+		color: #fff;
+		background-color: red;
+	}
+	#inputCon{
+		width: 100%;
+		height: 100px;
+		margin: 10 auto;
+		display: block;
+	}
+	#conHob{
+		display: inline-block;
+		width: 100%;
+		height: 40px;
+		background-color: #337AB7;
+		color: #fff;
+		font-size: 14px;
+		font-weight: bold;
+	}
+	#hobby{
+		width: 100%;
+		overflow: auto;
+	}
+	.hobbyitem{
+		float: left;
+		padding: 10px;
+		margin: 10px;
+		background-color: red;
+		color: #fff;
+	}
+
+	
+	</style>
+  </head>
+
+	<body>
+		<div id="main">
+			<label>Tag:</label><input id="tag">
+			<div id="squareQueue">
+				
+			</div>
+			<textarea id="inputCon" placeholder="请输入数字、中文、英文可以通过用回车，逗号（全角半角均可），顿号，空格（全角半角、Tab等均可）等符号作为不同内容的间隔"></textarea>
+			<button id="conHob">确认兴趣爱好</button>
+			<div id = 'hobby'></div>
+		</div>
+		
+
+		<script type="text/javascript">
+			
+			var queue = new Queue();
+			var a=[];
+			/*检测输入*/
+			function checkInput(){
+				var inputCon = document.getElementById('inputCon').value;
+				var reg = new RegExp("[^\n\r\s 、,，0-9A-Za-z\u4e00-\u9fa5]");
+				var isBlank = new RegExp("^[\n\r\s ,，、]*$");
+			    if(reg.test(inputCon)){
+				        alert("输入的内容只能包含数字、中文、英文");
+				        return false;
+				    }
+				    else if(isBlank.test(inputCon)){
+				        alert("无法输入空数据");
+				        return false;
+				    }
+				    else{
+				        return true;
+				    }
+			}
+			function delRepeat(arr) {
+
+		        var len = arr.length;  
+		        for(var i=0; i<len-1; i++){
+		        
+		          for(var j=i+1; j<len; j++){
+		          
+		            //如果元素相等了，就删除后面的那个元素
+		            if(arr[i] == arr[j]){
+		            
+		               arr.splice(j,1);     //删除元素
+		            }
+		          }
+		        }
+		         return arr;
+		      }
+
+
+			/*将输入的正确字符转为数组*/
+			function strtoArr(){
+
+				var inputCon = document.getElementById('inputCon').value;
+				var inputArr = inputCon.trim().split(/[\s\r\n、,，]+/);
+				if(inputArr.reverse()[0]==''){
+					inputArr.splice(0,1).reverse();
+				}
+				var newArr = delRepeat(a.concat(inputArr));
+				return newArr;
+			}
+
+			function confirmHob () {
+				var conHob = document.getElementById('conHob');
+				EventUtil.addHandler(conHob,'click',function (){
+					if (checkInput()) {
+						render1(strtoArr());
+					};
+				}) 
+			}
+			//封装事件处理程序
+			var EventUtil = {
+				addHandler:function(element,type,handler){
+					if(element.addEventListener){
+					    element.addEventListener(type,handler,false);
+					}else if(element.attachEvent){
+					    element.attachEvent("on"+type,handler);
+					}else{
+					    element["on" + type] = handler;
+					}
+				},
+				getEvent:function(event){
+					return event?event:window.event;
+				},
+				getTarget:function(event){
+					return event.target||event.srcElement;
+				},
+				getCharCode:function(event){
+					return event.keyCode||event.which||event.charCode;
+					},
+				getEventType:function(event){
+					return event.type;
+				}
+				}
+
+			//封装方块事件处理程序
+			var squareEventUtil = {
+				clickSquare:function (target){
+					if(target.className.toLowerCase() == 'numbox'){
+						queue.delSquare(target.dataset.key);
+						render();
+					}
+				},
+
+				mouseoverSquare:function (target){
+					if(target.className.toLowerCase() == 'numbox'){
+						queue.addDelItems(target.dataset.key);
+					}
+				},
+
+				mouseoutSquare:function (target){
+					if(target.className.toLowerCase() == 'numbox'){
+						queue.removeDelItems(target.dataset.key);
+					}
+				}
+			}
+			//监听方块事件
+			function addSquarHand () {
+				var squareQueue = document.getElementById('squareQueue');
+				EventUtil.addHandler(squareQueue,'click',squareHandler);
+				EventUtil.addHandler(squareQueue,'mouseover',squareHandler);
+				EventUtil.addHandler(squareQueue,'mouseout',squareHandler);
+			}
+			function squareHandler(event){
+				event = EventUtil.getEvent(event);
+				var eType = EventUtil.getEventType(event);
+				var eTarget = EventUtil.getTarget(event);
+
+				switch(eType){
+					case 'click':
+					squareEventUtil.clickSquare(eTarget);
+					break;
+					case 'mouseover':
+					console.log(eTarget);
+					squareEventUtil.mouseoverSquare(eTarget);
+					break;
+					case 'mouseout':
+					squareEventUtil.mouseoutSquare(eTarget);
+					break;
+				}
+			}
+			/*渲染*/
+			function render(){
+				var text = "";
+				var items = queue.arr();
+				var squareQueue = document.getElementById('squareQueue');
+				for(item in items)
+					{
+						text += '<div class = "numbox" data-key ='+item+'>'+items[item]+'</div>' ;
+					}
+					
+			
+				squareQueue.innerHTML = text;
+
+			}
+			function render1 (items) {
+				console.log(items);
+				var text = "";
+				
+				var hobby = document.getElementById('hobby');
+				if(items.length>10){
+					items = items.reverse().slice(0,10).reverse();
+				}
+				
+
+				for(item in items)
+					{
+						text += '<div class="hobbyitem"><span>'+items[item]+'</span></div>' ;
+					}
+					
+				
+				hobby.innerHTML = text;
+			}
+			
+			//定义Queue类
+			function Queue(){
+				var items = [];
+				var flag = 0;
+				this.arr=function(){
+					return items;
+				}
+				this.size=function(){
+					return items.length;
+				}
+				this.leftIn=function(item){
+					items.unshift(item);
+					if(this.size()>10){
+						this.rightOut();
+					}
+				}
+				this.rightOut=function(){
+					if(items.length>0){
+						alert(items.pop());
+					}
+				}
+				this.empty=function(){
+					items=[];
+				
+				}
+				this.delSquare=function(key){
+					console.log(key);
+					var order = parseInt(key);
+					var nowLen = items.length;
+					for(;order<nowLen-1;order++)
+					{
+						items[order]=items[order+1];
+					}
+					items.length=nowLen-1;
+				}
+				this.addDelItems=function(key){
+					if(flag==0){
+						var numList = document.getElementsByClassName('numbox');
+						var tempValue = numList[key].innerHTML;
+
+						numList[key].innerHTML = '删除'+tempValue +'?';
+						numList[key].style.background = 'green';
+
+						flag=1;
+					
+				}}
+				this.removeDelItems=function (key) {
+					if(flag==1){
+						var numList = document.getElementsByClassName('numbox');
+						numList[key].innerHTML = items[key];
+						numList[key].style.background = 'red';
+						flag=0;
+					}
+					
+				}
+			}
+
+			//tag处理事件
+			function tagSure(event){
+				var tag = document.getElementById('tag');
+				var isBlank = new RegExp("^[\n\r\s ,，、]*$");
+				event = EventUtil.getEvent(event);
+				EventUtil.addHandler(tag,'keyup',function(event){
+					var tagCon = tag.value;
+					if (/[,，;；、\s\n]+/.test(tagCon)||EventUtil.getCharCode(event)===13) {
+
+						if(!isBlank.test(tagCon)){
+							if (/[,，;；、\s\n]+/.test(tagCon)){
+								tagCon = tagCon.slice(0,tagCon.length-1);
+							}
+							queue.leftIn(tagCon);
+							render();
+							tag.value = "";
+						}
+						else{
+							tag.value="";
+						}
+
+					}
+					
+				});
+			}
+
+			
+		function init(){
+			tagSure();
+			addSquarHand();
+			confirmHob();
+		}
+		init();
+			
+			
+		</script>
+
+		
+	</body>
+
+</html>
